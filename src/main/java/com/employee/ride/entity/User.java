@@ -9,12 +9,13 @@ import java.io.Serializable;
 /**
  * Entity User
  */
+
+@Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@Builder
 @Entity
 @Table(name = UserConstant.TABLE_NAME)
 public class User implements Serializable {
