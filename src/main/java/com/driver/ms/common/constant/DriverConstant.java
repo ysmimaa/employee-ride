@@ -1,4 +1,4 @@
-package com.driver.ride.common.constant;
+package com.driver.ms.common.constant;
 
 /**
  * Interface that centralize the user constants
@@ -10,4 +10,6 @@ public interface DriverConstant {
     String DRIVER_URL_BASE = "/api";
 
     String DRIVERS = "/drivers";
+
+    String DRIVER_ADVANCED_SEARCH = "/advanceFilter";
 }

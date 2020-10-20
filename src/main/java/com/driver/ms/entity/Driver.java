@@ -1,6 +1,6 @@
-package com.driver.ride.entity;
+package com.driver.ms.entity;
 
-import com.driver.ride.common.constant.DriverConstant;
+import com.driver.ms.common.constant.DriverConstant;
 import lombok.*;
 
 import javax.persistence.*;
@@ -33,7 +33,7 @@ public class Driver implements Serializable {
     @Column
     private String phone;
 
-    @Column
+    @Column(name = "contractType")
     @Enumerated(EnumType.STRING)
     private ContractType contractType;
 }
