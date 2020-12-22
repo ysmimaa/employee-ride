@@ -29,8 +29,8 @@ public class Driver extends IdEntity {
     @Column
     private String lastname;
 
-    @Column
-    private String phone;
+    @Embedded
+    private Address address;
 
     @Column(name = "contractType")
     @Enumerated(EnumType.STRING)
@@ -40,6 +40,14 @@ public class Driver extends IdEntity {
     @JoinColumn(name = "id_journey")
     private Journey journey;
 
-    @Column
+    @Column(name = "HIRED_DATE")
     private LocalDateTime hiredDate;
+
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    private Company company;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

@@ -1,5 +1,6 @@
 package com.driver.ms.service.impl;
 
+import com.driver.ms.entity.Address;
 import com.driver.ms.entity.Driver;
 import com.driver.ms.entity.Journey;
 import com.driver.ms.repository.DriverRepository;
@@ -72,7 +73,6 @@ class DriverServiceImplUTest {
                 void should_return_the_list_of_drivers() {
                     Journey journey = Journey.builder()
                             .id(1L)
-                            .city("city1")
                             .nbrOfPlaces(22)
                             .build();
                     Driver expectedDriver = builder()
@@ -86,7 +86,6 @@ class DriverServiceImplUTest {
                                     .journey(
                                             Journey.builder()
                                                     .id(1L)
-                                                    .city("city2")
                                                     .nbrOfPlaces(22)
                                                     .build())
                                     .build(),
@@ -96,7 +95,6 @@ class DriverServiceImplUTest {
                                     .journey(
                                             Journey.builder()
                                                     .id(1L)
-                                                    .city("city3")
                                                     .nbrOfPlaces(22)
                                                     .build())
                                     .build()
@@ -175,13 +173,12 @@ class DriverServiceImplUTest {
                 Driver driver = builder()
                         .id(2L)
                         .firstname("firstname2")
-                        .phone("070605060")
                         .build();
-                when(driverRepository.findByPhone(anyString())).thenReturn(driver);
+                when(driverRepository.findByAddressPhone(anyString())).thenReturn(driver);
 
-                Driver driverByPhone = driverService.findDriverByPhone("060606060");
+                Driver driverByPhone = driverService.findByAddressPhone("060606060");
                 assertEquals(driver, driverByPhone, "The matching driver");
-                verify(driverRepository, times(1)).findByPhone(anyString());
+                verify(driverRepository, times(1)).findByAddressPhone(anyString());
             }
         }
 
@@ -192,8 +189,8 @@ class DriverServiceImplUTest {
             @Test
             @DisplayName(value = "Throw an exception")
             void should_throw_an_exception() {
-                assertThrows(NullPointerException.class, () -> driverService.findDriverByPhone(""), "Please provide a valid search criteria");
-                verify(driverRepository, times(0)).findByPhone(anyString());
+                assertThrows(NullPointerException.class, () -> driverService.findByAddressPhone(""), "Please provide a valid search criteria");
+                verify(driverRepository, times(0)).findByAddressPhone(anyString());
             }
         }
     }
@@ -212,7 +209,7 @@ class DriverServiceImplUTest {
                 Driver driver = builder()
                         .id(1L)
                         .firstname("driver1")
-                        .phone("062323236")
+                        .address(Address.builder().phone("062323236").build())
                         .build();
 
                 when(driverRepository.save(any(Driver.class))).thenReturn(driver);
@@ -253,7 +250,7 @@ class DriverServiceImplUTest {
                 Driver driver = builder()
                         .id(1L)
                         .firstname("driver1")
-                        .phone("062323236")
+                        .address(Address.builder().phone("062323236").build())
                         .build();
 
                 when(driverRepository.save(any(Driver.class))).thenReturn(driver);
@@ -281,7 +278,7 @@ class DriverServiceImplUTest {
                 Driver driver = builder()
                         .id(1L)
                         .firstname("driver1")
-                        .phone("062323236")
+                        .address(Address.builder().phone("062323236").build())
                         .build();
                 when(driverRepository.findById(anyLong())).thenReturn(Optional.of(driver));
                 when(driverRepository.save(any(Driver.class))).thenReturn(driver);

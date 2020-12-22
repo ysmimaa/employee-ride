@@ -8,10 +8,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,7 +70,7 @@ public class DriverRestController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping(path = "driver/{id}")
+    @DeleteMapping(path = DriverConstant.DELETE_DRIVER_BY_ID)
     public ResponseEntity<Driver> deleteDriver(@PathVariable(name = "id") Long id) {
         if (id != null) {
             return new ResponseEntity<>(driverService.deleteDriverById(id), HttpStatus.OK);
@@ -109,7 +105,7 @@ public class DriverRestController {
         System.out.println(duration.getSeconds());
     }
 
-    @GetMapping(path = DriverConstant.BASIC_AUTH)
+    @GetMapping(path = DriverConstant.USER + DriverConstant.BASIC_AUTH)
     public ResponseEntity<Boolean> getAuth() {
         return new ResponseEntity<>(true, HttpStatus.OK);
     }

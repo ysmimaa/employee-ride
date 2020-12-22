@@ -1,6 +1,5 @@
 package com.driver.ms.entity;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -18,7 +17,7 @@ import java.io.Serializable;
 @SuperBuilder
 @Getter
 @MappedSuperclass
-public class IdEntity implements Serializable {
+public abstract class IdEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
