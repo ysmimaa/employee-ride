@@ -32,7 +32,7 @@ public class DriverIT {
     @Autowired
     private DriverService driverService;
 
-    //@Disabled("Disable until defining the list of users behavior")
+    /*@Disabled("Disable until defining the list of users behavior")
     @Test
     void should_return_a_list_of_users() throws Exception {
 
@@ -43,5 +43,5 @@ public class DriverIT {
         List<Driver> drivers = JsonUtils.deserializeStringToList(content, Driver.class);
 
         MatcherAssert.assertThat(drivers, IsCollectionWithSize.hasSize(6));
-    }
+    }*/
 }
