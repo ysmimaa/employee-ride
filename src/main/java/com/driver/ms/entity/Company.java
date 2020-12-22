@@ -3,10 +3,7 @@ package com.driver.ms.entity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +18,6 @@ import static javax.persistence.FetchType.LAZY;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 @SuperBuilder
 @Entity
 @Table(name = TABLE_NAME)
@@ -33,7 +29,15 @@ public class Company extends IdEntity {
     @Column
     private String activity;
 
+    @Embedded
+    private Address address;
+
     @Builder.Default
-    @OneToMany(mappedBy = "company", fetch = LAZY, cascade = ALL)
-    private List<Journey> journeys = new ArrayList<>();
+    @OneToMany(mappedBy = "company", cascade = ALL)
+    private List<Driver> drivers = new ArrayList<>();
+
+    @OneToMany(cascade = ALL)
+    @JoinTable(name = "CONTRACT", joinColumns = @JoinColumn(name = "company_id"),
+            inverseJoinColumns = @JoinColumn(name = "factory_id"))
+    private List<Factories> factories = new ArrayList<>();
 }

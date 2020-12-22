@@ -19,5 +19,5 @@ public interface DriverRepository extends JpaRepository<Driver, Long> {
      * @param phone
      * @return a matching driver
      */
-    Driver findByPhone(@Param("phone") String phone);
+    Driver findByAddressPhone(@Param("phone") String phone);
 }

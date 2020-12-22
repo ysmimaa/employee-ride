@@ -25,19 +25,16 @@ import static com.driver.ms.common.constant.JourneyConstant.TABLE_NAME;
 @Table(name = TABLE_NAME)
 public class Journey extends IdEntity {
 
-    @Column
-    private String city;
+    @Embedded
+    private Address address;
 
-    @Column
-    private String address;
-
-    @Column
+    @Column(name = "NBR_OF_PLACES")
     private Integer nbrOfPlaces;
 
-    @Column
+    @Column(name = "START_AT")
     private LocalDateTime startAt;
 
-    @Column
+    @Column(name = "END_AT")
     private LocalDateTime endAt;
 
     @ManyToOne

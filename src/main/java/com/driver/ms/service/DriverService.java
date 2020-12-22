@@ -54,7 +54,7 @@ public interface DriverService {
      * @param phone
      * @return a matching driver
      */
-    Driver findDriverByPhone(String phone);
+    Driver findByAddressPhone(String phone);
 
     /**
      * Method returns a grouped driver's list by journey

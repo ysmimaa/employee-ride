@@ -1,7 +1,7 @@
 package com.driver.ms.integration;
 
 import com.driver.ms.common.constant.DriverConstant;
-import com.driver.ms.common.constant.utils.JsonUtils;
+import com.driver.ms.common.utils.JsonUtils;
 import com.driver.ms.entity.Driver;
 import com.driver.ms.service.DriverService;
 import org.hamcrest.MatcherAssert;

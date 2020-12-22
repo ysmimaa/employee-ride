@@ -80,14 +80,14 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public Driver findDriverByPhone(String phone) {
+    public Driver findByAddressPhone(String phone) {
         if (phone.isEmpty() || phone.isBlank()) {
             log.debug("The argument {} is not valid", phone);
             /**TO DO : EXCEPTION HANDLING***/
             throw new NullPointerException();
         }
         log.debug("Find driver by phone {} : ", phone);
-        return driverRepository.findByPhone(phone);
+        return driverRepository.findByAddressPhone(phone);
     }
 
     @Override
