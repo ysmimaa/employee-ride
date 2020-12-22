@@ -153,17 +153,16 @@ class DriverRestControllerTest {
 
         when(driverService.deleteDriverById(anyLong())).thenReturn(driver);
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete(DRIVER_URL_BASE + DriverConstant.DELETE_DRIVER_BY_ID)
-                .param("id", "1"))
-                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete(DRIVER_URL_BASE + DriverConstant.DELETE_DRIVER_BY_ID, "1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
         String contentAsString = mvcResult.getResponse().getContentAsString();
-        //Driver deletedDriver = JsonUtils.deserializeStringToObject(contentAsString, Driver.class);
+        Driver deletedDriver = JsonUtils.deserializeStringToObject(contentAsString, Driver.class);
 
-        //org.assertj.core.api.Assertions.assertThat(deletedDriver).isEqualTo(driver);
+        org.assertj.core.api.Assertions.assertThat(deletedDriver.getId()).isEqualTo(driver.getId());
 
-        //verify(driverService, times(1)).deleteDriverById(anyLong());
+        verify(driverService, times(1)).deleteDriverById(anyLong());
 
     }
 
@@ -176,17 +175,19 @@ class DriverRestControllerTest {
 
         when(driverService.createDriver(any(Driver.class))).thenReturn(driver);
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(DRIVER_URL_BASE + DriverConstant.CREATE_DRIVER))
-                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(DRIVER_URL_BASE + DriverConstant.CREATE_DRIVER)
+                .content(JsonUtils.serializeObjectToString(driver))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andReturn();
 
         String contentAsString = mvcResult.getResponse().getContentAsString();
-        /*Driver createdDriver = JsonUtils.deserializeStringToObject(contentAsString, Driver.class);
+        Driver createdDriver = JsonUtils.deserializeStringToObject(contentAsString, Driver.class);
 
-        org.assertj.core.api.Assertions.assertThat(createdDriver).isEqualTo(driver);
+        org.assertj.core.api.Assertions.assertThat(createdDriver.getId()).isEqualTo(driver.getId());
 
         verify(driverService, times(1)).createDriver(any(Driver.class));
-    */
     }
 
 }

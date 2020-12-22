@@ -7,21 +7,13 @@ import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @SuperBuilder
 @Setter
 @Getter
 @NoArgsConstructor
 @Entity
 @Table(name = "t_user")
-public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.TABLE, generator = "key_generator")
-    @TableGenerator(name = "key_generator", pkColumnName = "pk_name", pkColumnValue = "pk_value",
-            table = "USER_KEY")
-    @Column(name = "USER_ID")
-    private Long id;
+public class User extends IdEntity {
 
     @Column(name = "USERNAME", nullable = false)
     private String username;

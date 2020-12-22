@@ -32,13 +32,9 @@ public class DriverIT {
     @Autowired
     private DriverService driverService;
 
-    @Disabled("Disable until defining the list of users behavior")
+    //@Disabled("Disable until defining the list of users behavior")
     @Test
     void should_return_a_list_of_users() throws Exception {
-        Driver driver = driverService.createDriver(Driver.builder()
-                .id(1L)
-                .firstname("TI1")
-                .build());
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get(DRIVER_URL_BASE.concat(DriverConstant.DRIVERS)))
                 .andReturn();
@@ -46,6 +42,6 @@ public class DriverIT {
 
         List<Driver> drivers = JsonUtils.deserializeStringToList(content, Driver.class);
 
-        MatcherAssert.assertThat(drivers, IsCollectionWithSize.hasSize(4));
+        MatcherAssert.assertThat(drivers, IsCollectionWithSize.hasSize(6));
     }
 }

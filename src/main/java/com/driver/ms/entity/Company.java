@@ -36,6 +36,7 @@ public class Company extends IdEntity {
     @OneToMany(mappedBy = "company", cascade = ALL)
     private List<Driver> drivers = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(cascade = ALL)
     @JoinTable(name = "CONTRACT", joinColumns = @JoinColumn(name = "company_id"),
             inverseJoinColumns = @JoinColumn(name = "factory_id"))

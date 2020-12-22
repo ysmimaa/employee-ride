@@ -70,7 +70,7 @@ public class DriverRestController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping(path = "driver/{id}")
+    @DeleteMapping(path = DriverConstant.DELETE_DRIVER_BY_ID)
     public ResponseEntity<Driver> deleteDriver(@PathVariable(name = "id") Long id) {
         if (id != null) {
             return new ResponseEntity<>(driverService.deleteDriverById(id), HttpStatus.OK);
@@ -105,7 +105,7 @@ public class DriverRestController {
         System.out.println(duration.getSeconds());
     }
 
-    @GetMapping(path = DriverConstant.BASIC_AUTH)
+    @GetMapping(path = DriverConstant.USER + DriverConstant.BASIC_AUTH)
     public ResponseEntity<Boolean> getAuth() {
         return new ResponseEntity<>(true, HttpStatus.OK);
     }

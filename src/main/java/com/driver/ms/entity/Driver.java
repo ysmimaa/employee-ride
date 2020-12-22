@@ -21,7 +21,7 @@ import static com.driver.ms.common.constant.DriverConstant.TABLE_NAME;
 @ToString
 @Entity
 @Table(name = TABLE_NAME)
-public class Driver extends User{
+public class Driver extends IdEntity {
 
     @Column
     private String firstname;
@@ -46,4 +46,8 @@ public class Driver extends User{
     @ManyToOne
     @JoinColumn(name = "company_id")
     private Company company;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

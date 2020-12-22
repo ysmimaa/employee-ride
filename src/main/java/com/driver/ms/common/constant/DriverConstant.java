@@ -9,7 +9,7 @@ public interface DriverConstant {
 
     String DRIVERS = "/drivers";
 
-    String DELETE_DRIVER_BY_ID = "/driver";
+    String DELETE_DRIVER_BY_ID = "/driver/{id}";
 
     String DRIVER_ADVANCED_SEARCH = "/advanceFilter";
 
@@ -18,4 +18,6 @@ public interface DriverConstant {
     String UPDATE_DRIVER = "/update";
 
     String BASIC_AUTH = "/basic-auth";
+
+    String USER = "/user";
 }
