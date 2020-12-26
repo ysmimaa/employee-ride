@@ -36,18 +36,23 @@ public class Driver extends IdEntity {
     @Enumerated(EnumType.STRING)
     private ContractType contractType;
 
-    @OneToOne
-    @JoinColumn(name = "id_journey")
-    private Journey journey;
-
     @Column(name = "HIRED_DATE")
     private LocalDateTime hiredDate;
-
-    @ManyToOne
-    @JoinColumn(name = "company_id")
-    private Company company;
 
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Column(name = "journey_id")
+    private Long journeyId;
+
+    @Column(name = "company_id")
+    private Long companyId;
+
+    @Transient
+    private Journey journey;
+
+    @Transient
+    private Company company;
+
 }
