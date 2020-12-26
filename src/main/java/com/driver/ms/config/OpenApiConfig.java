@@ -10,8 +10,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class OpenApiConfig {
 
-    @Autowired
     private DriverProperties driverProperties;
+
+    @Autowired
+    public OpenApiConfig(DriverProperties driverProperties) {
+        this.driverProperties = driverProperties;
+    }
 
     @Bean
     public OpenAPI springShopOpenAPI() {
