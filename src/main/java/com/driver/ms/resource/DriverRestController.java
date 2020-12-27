@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ import java.util.List;
 
 import static com.driver.ms.common.constant.CommonConstant.DRIVER_URL_BASE;
 
-@CrossOrigin(origins = {"http://localhost:4200"})
+@Slf4j
 @Tag(name = "Driver", description = "Driver's APIs")
 @RestController
 @RequestMapping(DRIVER_URL_BASE)
@@ -39,8 +40,10 @@ public class DriverRestController {
             content = @Content(schema = @Schema(implementation = Driver.class)))
     @GetMapping(DriverConstant.DRIVERS)
     public ResponseEntity<List<Driver>> getDrivers() {
+        log.info("Retrieve all the drivers");
         List<Driver> listOfDriver = driverService.getListOfDriver();
         if (!CollectionUtils.isEmpty(listOfDriver)) {
+            log.info("All drivers have been retrieved");
             return new ResponseEntity<>(listOfDriver, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -99,6 +102,7 @@ public class DriverRestController {
     @GetMapping("fireUp")
     public void fireUp() {
         Instant startTime = Instant.now();
+        //CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(() -> driverService.testPerformance());
         driverService.testPerformance();
         Instant endTime = Instant.now();
         Duration duration = Duration.between(startTime, endTime);
@@ -108,10 +112,5 @@ public class DriverRestController {
     @GetMapping(path = DriverConstant.USER + DriverConstant.BASIC_AUTH)
     public ResponseEntity<Boolean> getAuth() {
         return new ResponseEntity<>(true, HttpStatus.OK);
-    }
-
-    @GetMapping(path = "exception")
-    public String getException() {
-        throw new RuntimeException("Testing the exception behavior");
     }
 }

@@ -98,16 +98,18 @@ public class DriverServiceImpl implements DriverService {
     @Async(value = "Pool1")
     @Override
     public void testPerformance() {
+        String name = Thread.currentThread().getName();
+        System.out.println("# Thread name " + name);
         RestTemplate restTemplate = new RestTemplate();
         List<Driver> drivers = new ArrayList<>();
         for (int i = 1; i < 10000; i++) {
-            Driver retrievedDriver = restTemplate.getForObject("http://localhost:8081/driver/api/driver/1", Driver.class);
+            Driver retrievedDriver = restTemplate.getForObject("http://localhost:8001/api/driver/2", Driver.class);
             drivers.add(retrievedDriver);
         }
         List<StringBuilder> outputDrivers = new ArrayList<>();
         for (Driver d : drivers) {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(d.getFirstname());
+            stringBuilder.append(d.getId());
             stringBuilder.append(" ; ");
             outputDrivers.add(stringBuilder);
         }
