@@ -5,6 +5,6 @@ package com.driver.ms.common.constant;
  */
 public interface CommonConstant {
 
-    String DRIVER_URL_BASE = "/api";
+    String DRIVER_URL_BASE = "/api/";
 
 }

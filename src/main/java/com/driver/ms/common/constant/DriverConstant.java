@@ -7,17 +7,21 @@ public interface DriverConstant {
 
     String TABLE_NAME = "driver";
 
-    String DRIVERS = "/drivers";
+    String DRIVERS = "drivers";
 
-    String DELETE_DRIVER_BY_ID = "/driver/{id}";
+    String DELETE_DRIVER_BY_ID = "driver/{id}";
 
-    String DRIVER_ADVANCED_SEARCH = "/advanceFilter";
+    String FIND_DRIVER_BY_ID = "driver/findById/{id}";
 
-    String CREATE_DRIVER = "/create";
+    String DRIVER_ADVANCED_SEARCH = "advanceFilter";
 
-    String UPDATE_DRIVER = "/update";
+    String CREATE_DRIVER = "create";
 
-    String BASIC_AUTH = "/basic-auth";
+    String UPDATE_DRIVER = "update";
 
-    String USER = "/user";
+    String BASIC_AUTH = "basic-auth";
+
+    String USER = "user";
+
+    String ID = "id";
 }
