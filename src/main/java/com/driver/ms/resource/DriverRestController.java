@@ -55,7 +55,7 @@ public class DriverRestController {
         if (firstname.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        List<Driver> drivers = driverService.findByFirstname(firstname);
+        List<Driver> drivers = driverService.findByFirstName(firstname);
         if (CollectionUtils.isEmpty(drivers)) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -96,22 +96,8 @@ public class DriverRestController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @GetMapping("fireUp")
-    public void fireUp() {
-        Instant startTime = Instant.now();
-        driverService.testPerformance();
-        Instant endTime = Instant.now();
-        Duration duration = Duration.between(startTime, endTime);
-        System.out.println(duration.getSeconds());
-    }
-
     @GetMapping(path = DriverConstant.USER + DriverConstant.BASIC_AUTH)
     public ResponseEntity<Boolean> getAuth() {
         return new ResponseEntity<>(true, HttpStatus.OK);
-    }
-
-    @GetMapping(path = "exception")
-    public String getException() {
-        throw new RuntimeException("Testing the exception behavior");
     }
 }

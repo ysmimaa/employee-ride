@@ -103,7 +103,7 @@ class DriverRestControllerTest {
                         .build()
         );
 
-        when(driverService.findByFirstname(anyString())).thenReturn(driversFound);
+        when(driverService.findByFirstName(anyString())).thenReturn(driversFound);
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(DRIVER_URL_BASE + DriverConstant.DRIVER_ADVANCED_SEARCH)
                 .accept(MediaType.APPLICATION_JSON)
@@ -118,7 +118,7 @@ class DriverRestControllerTest {
 
         Assertions.assertAll("Check condition", () -> Assertions.assertEquals(2, drivers.size()));
 
-        verify(driverService, times(1)).findByFirstname(anyString());
+        verify(driverService, times(1)).findByFirstName(anyString());
 
     }
 
@@ -126,7 +126,7 @@ class DriverRestControllerTest {
     void should_apply_advanced_filter_and_return_an_empty_list() throws Exception {
         List<Driver> driversFound = new ArrayList<>();
 
-        when(driverService.findByFirstname(anyString())).thenReturn(driversFound);
+        when(driverService.findByFirstName(anyString())).thenReturn(driversFound);
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(DRIVER_URL_BASE + DriverConstant.DRIVER_ADVANCED_SEARCH)
                 .accept(MediaType.APPLICATION_JSON)
@@ -141,7 +141,7 @@ class DriverRestControllerTest {
 
         Assertions.assertAll("Check condition", () -> Assertions.assertEquals(0, drivers.size()));
 
-        verify(driverService, times(1)).findByFirstname(anyString());
+        verify(driverService, times(1)).findByFirstName(anyString());
 
     }
 

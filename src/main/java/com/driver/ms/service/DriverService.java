@@ -1,12 +1,10 @@
 package com.driver.ms.service;
 
-import com.driver.ms.entity.ContractType;
 import com.driver.ms.entity.Driver;
 import com.driver.ms.entity.Journey;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public interface DriverService {
 
@@ -30,7 +28,7 @@ public interface DriverService {
      *
      * @return list of dirvers found
      */
-    List<Driver> findByFirstname(String name);
+    List<Driver> findByFirstName(String name);
 
     /**
      * Method that update an existing driver
@@ -63,7 +61,11 @@ public interface DriverService {
      */
     Map<Journey, List<Driver>> getGroupedDriversByJourney();
 
-    void testPerformance();
-
+    /**
+     * Method for deleting the driver by his id
+     *
+     * @param id driver id
+     * @return deleted id
+     */
     Driver deleteDriverById(Long id);
 }

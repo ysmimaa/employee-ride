@@ -3,23 +3,25 @@ package com.driver.ms.service.impl;
 import com.driver.ms.entity.Address;
 import com.driver.ms.entity.Driver;
 import com.driver.ms.entity.Journey;
+import com.driver.ms.exception.BadParamException;
+import com.driver.ms.exception.ExistingDriverException;
 import com.driver.ms.repository.DriverRepository;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import java.util.*;
 
+import static com.driver.ms.entity.Driver.builder;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static com.driver.ms.entity.Driver.builder;
 
 @DisplayName(" **** Driver services **** ")
 class DriverServiceImplUTest {
@@ -129,9 +131,9 @@ class DriverServiceImplUTest {
     @Nested
     class DisplayDriversBySearchCriteria {
 
-        @DisplayName("When passing the firstname criteria ")
+        @DisplayName("When passing the firstName criteria ")
         @Nested
-        class DriverByFirstname {
+        class DriverByFirstName {
 
             @Test
             @DisplayName(value = "Display drivers based on the search criteria available in the list")
@@ -154,50 +156,64 @@ class DriverServiceImplUTest {
                                 .firstname("firstname4")
                                 .build());
                 when(driverRepository.findByFirstname(anyString())).thenReturn(driversList);
-                List<Driver> listOfDriver = driverService.findByFirstname("firstname1");
+                List<Driver> listOfDriver = driverService.findByFirstName("firstname1");
                 assertAll("Verify conditions for displaying the drivers",
                         () -> assertEquals(4, listOfDriver.size(), "An empty list of user"));
                 assertThat(listOfDriver).contains(driversList.get(0));
 
                 verify(driverRepository, times(1)).findByFirstname(anyString());
             }
-        }
 
-        @DisplayName("When passing the phone criteria ")
-        @Nested
-        class DriverByPhone {
+            @DisplayName("When passing an invalid firstName criteria")
+            @Nested
+            class DriverByFirstNameInvalidParam {
 
-            @Test
-            @DisplayName(value = "Display driver based on the phone search criteria")
-            void should_return_a_driver_based_on_the_phone_search_criteria() {
-                Driver driver = builder()
-                        .id(2L)
-                        .firstname("firstname2")
-                        .build();
-                when(driverRepository.findByAddressPhone(anyString())).thenReturn(driver);
+                @Test
+                @DisplayName(value = "Bad param exception is thrown")
+                void should_throw_bad_param_exception_when_providing_invalid_param() {
 
-                Driver driverByPhone = driverService.findByAddressPhone("060606060");
-                assertEquals(driver, driverByPhone, "The matching driver");
-                verify(driverRepository, times(1)).findByAddressPhone(anyString());
+                    assertAll("Verify conditions for displaying the drivers",
+                            () -> assertThrows(BadParamException.class, () -> driverService.findByFirstName(null),
+                                    "Please provide a valid param"));
+                }
             }
-        }
 
-        @DisplayName("When passing an invalid phone criteria ")
-        @Nested
-        class DriverByInvalidPhone {
+            @DisplayName("When passing the phone criteria ")
+            @Nested
+            class DriverByPhone {
 
-            @Test
-            @DisplayName(value = "Throw an exception")
-            void should_throw_an_exception() {
-                assertThrows(NullPointerException.class, () -> driverService.findByAddressPhone(""), "Please provide a valid search criteria");
-                verify(driverRepository, times(0)).findByAddressPhone(anyString());
+                @Test
+                @DisplayName(value = "Display driver based on the phone search criteria")
+                void should_return_a_driver_based_on_the_phone_search_criteria() {
+                    Driver driver = builder()
+                            .id(2L)
+                            .firstname("firstname2")
+                            .build();
+                    when(driverRepository.findByAddressPhone(anyString())).thenReturn(Optional.of(driver));
+
+                    Driver driverByPhone = driverService.findByAddressPhone("060606060");
+                    assertEquals(driver, driverByPhone, "The matching driver");
+                    verify(driverRepository, times(1)).findByAddressPhone(anyString());
+                }
+            }
+
+            @DisplayName("When passing an invalid phone criteria ")
+            @Nested
+            class DriverByInvalidPhone {
+
+                @Test
+                @DisplayName(value = "Throw an exception")
+                void should_throw_an_exception() {
+                    assertThrows(BadParamException.class, () -> driverService.findByAddressPhone(""), "Please provide a valid search criteria");
+                    verify(driverRepository, times(0)).findByAddressPhone(anyString());
+                }
             }
         }
     }
 
     @Nested
-    @DisplayName("Given a new driver")
-    class AddNewDriver {
+    @DisplayName("Given a new driver to be added")
+    class AddingNewDriver {
 
         @Nested
         @DisplayName("When user passes a new driver")
@@ -206,61 +222,56 @@ class DriverServiceImplUTest {
             @DisplayName("Then a new driver should be created and added to the list")
             @Test
             void should_create_a_new_driver() {
-                Driver driver = builder()
+                Driver driverToPersist = builder()
                         .id(1L)
                         .firstname("driver1")
                         .address(Address.builder().phone("062323236").build())
                         .build();
 
-                when(driverRepository.save(any(Driver.class))).thenReturn(driver);
+                Driver foundDriver = builder()
+                        .id(2L)
+                        .build();
 
-                Driver createdDriver = driverService.createDriver(driver);
+                when(driverRepository.findById(anyLong())).thenReturn(Optional.of(foundDriver));
+                when(driverRepository.save(any(Driver.class))).thenReturn(driverToPersist);
+
+                Driver createdDriver = driverService.createDriver(driverToPersist);
 
                 assertAll("Check conditions",
-                        () -> assertEquals(driver, createdDriver, "A new driver has been created"));
+                        () -> assertEquals(driverToPersist, createdDriver, "A new driver has been created"));
                 verify(driverRepository, times(1)).save(any(Driver.class));
+                verify(driverRepository, times(1)).findById(anyLong());
+
             }
         }
 
         @DisplayName("When user passes an invalid driver")
         @Nested
-        class AddInvalidDriverThrowsException {
+        class NewInvalidDriverThrowsException {
 
-            @DisplayName("Then throw an exception")
+            @DisplayName("Then throw a BadParamException exception")
             @Test
             void should_throw_exception_when_trying_to_add_an_empty_or_invalid_driver() {
-                assertThrows(NullPointerException.class, () -> driverService.createDriver(null),
+                assertThrows(BadParamException.class, () -> driverService.createDriver(null),
                         "should throw a NullPointerException exception");
             }
         }
-    }
 
-
-    @DisplayName("Given a new existing driver")
-    @Nested
-    class AddNewExistingDriver {
-
+        @DisplayName("When user passes an existing driver to be saved")
         @Nested
-        @DisplayName("When the user passes a new existing driver")
-        class NewDriver {
+        class NewExistingDriverThrowException {
 
-            @DisplayName("Then the new existing driver must be rejected")
+            @DisplayName("Then throw existing driver exception")
             @Test
-            void should_reject_a_new_existing_driver() {
-                Driver driver = builder()
-                        .id(1L)
-                        .firstname("driver1")
-                        .address(Address.builder().phone("062323236").build())
-                        .build();
+            void should_throw_existing_drive_exception() {
+                //Given
+                Driver exitingDriver = builder().id(1L).build();
 
-                when(driverRepository.save(any(Driver.class))).thenReturn(driver);
-                when(driverRepository.findById(anyLong())).thenReturn(Optional.of(driver));
-                Driver createdDriver = driverService.createDriver(driver);
-                assertAll("Check condition",
-                        () -> Assertions.assertNull(createdDriver, "The new driver already exists"));
-
+                //When
+                when(driverRepository.findById(anyLong())).thenReturn(Optional.of(exitingDriver));
+                assertThrows(ExistingDriverException.class, () -> driverService.createDriver(exitingDriver));
                 verify(driverRepository, times(1)).findById(anyLong());
-                verify(driverRepository, times(0)).save(any(Driver.class));
+
             }
         }
     }

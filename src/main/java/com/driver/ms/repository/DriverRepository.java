@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface DriverRepository extends JpaRepository<Driver, Long> {
     /**
@@ -19,5 +20,5 @@ public interface DriverRepository extends JpaRepository<Driver, Long> {
      * @param phone
      * @return a matching driver
      */
-    Driver findByAddressPhone(@Param("phone") String phone);
+    Optional<Driver> findByAddressPhone(@Param("phone") String phone);
 }
