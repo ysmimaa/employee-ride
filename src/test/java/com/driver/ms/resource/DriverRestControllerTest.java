@@ -94,12 +94,20 @@ class DriverRestControllerTest {
         List<Driver> driversFound = Arrays.asList(Driver.builder()
                         .id(1L)
                         .firstname("firstname1")
-                        .address(Address.builder().phone("062323236").build())
+                        .address(
+                                Address.builder()
+                                        .phone("062323236")
+                                        .build()
+                        )
                         .build(),
                 Driver.builder()
                         .id(2L)
                         .firstname("firstname2")
-                        .address(Address.builder().phone("062323236").build())
+                        .address(
+                                Address.builder()
+                                        .phone("062323236")
+                                        .build()
+                        )
                         .build()
         );
 

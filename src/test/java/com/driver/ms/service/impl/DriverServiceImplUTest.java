@@ -225,7 +225,11 @@ class DriverServiceImplUTest {
                 Driver driverToPersist = builder()
                         .id(1L)
                         .firstname("driver1")
-                        .address(Address.builder().phone("062323236").build())
+                        .address(
+                                Address.builder()
+                                        .phone("062323236")
+                                        .build()
+                        )
                         .build();
 
                 Driver foundDriver = builder()
@@ -289,7 +293,11 @@ class DriverServiceImplUTest {
                 Driver driver = builder()
                         .id(1L)
                         .firstname("driver1")
-                        .address(Address.builder().phone("062323236").build())
+                        .address(
+                                Address.builder()
+                                        .phone("062323236")
+                                        .build()
+                        )
                         .build();
                 when(driverRepository.findById(anyLong())).thenReturn(Optional.of(driver));
                 when(driverRepository.save(any(Driver.class))).thenReturn(driver);

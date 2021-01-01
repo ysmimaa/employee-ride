@@ -21,7 +21,7 @@ import java.util.List;
 import static com.driver.ms.common.constant.CommonConstant.DRIVER_URL_BASE;
 
 @CrossOrigin(origins = {"http://localhost:4200"})
-@Tag(name = "Driver", description = "Driver's APIs")
+@Tag(name = DriverConstant.TABLE_NAME, description = "Driver's APIs")
 @RestController
 @RequestMapping(DRIVER_URL_BASE)
 public class DriverRestController {
@@ -51,7 +51,7 @@ public class DriverRestController {
             description = "Return a list of drivers based on the filter criteria",
             content = @Content(schema = @Schema(implementation = Driver.class)))
     @GetMapping(DriverConstant.DRIVER_ADVANCED_SEARCH)
-    public ResponseEntity<List<Driver>> getDriversByFirstnameOrContractType(@RequestParam("firstname") String firstname) {
+    public ResponseEntity<List<Driver>> getDriversByFirstNameOrContractType(@RequestParam("firstname") String firstname) {
         if (firstname.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -62,8 +62,8 @@ public class DriverRestController {
         return new ResponseEntity<>(drivers, HttpStatus.OK);
     }
 
-    @GetMapping(path = "driver/{id}")
-    public ResponseEntity<Driver> getDriver(@PathVariable(name = "id") Long id) {
+    @GetMapping(path = DriverConstant.FIND_DRIVER_BY_ID)
+    public ResponseEntity<Driver> getDriverById(@PathVariable(name = DriverConstant.ID) Long id) {
         if (id != null) {
             return new ResponseEntity<>(driverService.findDriverById(id), HttpStatus.OK);
         }
@@ -71,7 +71,7 @@ public class DriverRestController {
     }
 
     @DeleteMapping(path = DriverConstant.DELETE_DRIVER_BY_ID)
-    public ResponseEntity<Driver> deleteDriver(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<Driver> deleteDriver(@PathVariable(name = DriverConstant.ID) Long id) {
         if (id != null) {
             return new ResponseEntity<>(driverService.deleteDriverById(id), HttpStatus.OK);
         }
