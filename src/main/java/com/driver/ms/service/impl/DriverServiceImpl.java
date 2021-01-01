@@ -2,23 +2,20 @@ package com.driver.ms.service.impl;
 
 import com.driver.ms.entity.Driver;
 import com.driver.ms.entity.Journey;
+import com.driver.ms.exception.BadParamException;
+import com.driver.ms.exception.DriverNotFoundException;
+import com.driver.ms.exception.ExistingDriverException;
 import com.driver.ms.repository.DriverRepository;
 import com.driver.ms.service.DriverService;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-@Log4j2
+@Slf4j
 @Service
 public class DriverServiceImpl implements DriverService {
 
@@ -40,19 +37,24 @@ public class DriverServiceImpl implements DriverService {
         log.info("Create a new driver");
         if (driver != null) {
             Long driverId = driver.getId();
-            if (driverId != null && findDriverById(driverId) != null) {
-                log.debug("Driver {} already exist", driver);
-                /***TO DO : ERROR HANDLING*/
-                return null;
+            Driver foundDriverById = findDriverById(driverId);
+            if (driverId != null && foundDriverById != null
+                    && foundDriverById.getId().compareTo(driverId) == 0) {
+                log.error("Driver {} already exist", driver);
+                throw new ExistingDriverException("Driver already exist");
             }
             log.debug("Drive has been created");
             return driverRepository.save(driver);
         }
-        throw new NullPointerException();
+        throw new BadParamException("Please provide a valid driver");
     }
 
     @Override
-    public List<Driver> findByFirstname(String name) {
+    public List<Driver> findByFirstName(String name) {
+        if (name == null) {
+            throw new BadParamException("Please provide a valid driver");
+        }
+        log.info("Fetching the list of driver based on the firstName criteria");
         return driverRepository.findByFirstname(name);
     }
 
@@ -61,7 +63,7 @@ public class DriverServiceImpl implements DriverService {
         if (driver != null) {
             Long driverId = driver.getId();
             if (driverId != null) {
-                log.debug("find the driver by id : {} ", driver.getId());
+                log.debug("find the driver by id : {} ", driverId);
                 Driver driverById = findDriverById(driverId);
                 if (driverById != null) {
                     log.debug("The driver has been saved");
@@ -69,25 +71,28 @@ public class DriverServiceImpl implements DriverService {
                 }
             }
         }
-        /**TO DO : EXCEPTION HANDLING***/
-        return null;
+        throw new BadParamException("Please provide a valid driver");
     }
 
     @Override
     public Driver findDriverById(Long id) {
-        log.debug("Find driver by id : {} ", id);
-        return driverRepository.findById(id).orElse(null);
+        if (id != null) {
+            log.debug("Find driver by id : {} ", id);
+            return driverRepository.findById(id)
+                    .orElseThrow(() -> new DriverNotFoundException("Driver with id " + id + " not found"));
+        }
+        throw new BadParamException("Please provide a valid driver id");
     }
 
     @Override
     public Driver findByAddressPhone(String phone) {
         if (phone.isEmpty() || phone.isBlank()) {
-            log.debug("The argument {} is not valid", phone);
-            /**TO DO : EXCEPTION HANDLING***/
-            throw new NullPointerException();
+            log.error("The argument {} is not valid", phone);
+            throw new BadParamException("Please provide a valid phone number");
         }
         log.debug("Find driver by phone {} : ", phone);
-        return driverRepository.findByAddressPhone(phone);
+        return driverRepository.findByAddressPhone(phone)
+                .orElseThrow(() -> new DriverNotFoundException("Driver with id " + phone + " not found"));
     }
 
     @Override
@@ -95,55 +100,17 @@ public class DriverServiceImpl implements DriverService {
         return driverRepository.findAll().stream().collect(Collectors.groupingBy(Driver::getJourney));
     }
 
-    @Async(value = "Pool1")
-    @Override
-    public void testPerformance() {
-        RestTemplate restTemplate = new RestTemplate();
-        List<Driver> drivers = new ArrayList<>();
-        for (int i = 1; i < 10000; i++) {
-            Driver retrievedDriver = restTemplate.getForObject("http://localhost:8081/driver/api/driver/1", Driver.class);
-            drivers.add(retrievedDriver);
-        }
-        List<StringBuilder> outputDrivers = new ArrayList<>();
-        for (Driver d : drivers) {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(d.getFirstname());
-            stringBuilder.append(" ; ");
-            outputDrivers.add(stringBuilder);
-        }
-
-        outputDrivers.forEach(System.out::println);
-
-    }
-
-    public static List<StringBuilder> getData() {
-        List<Driver> drivers = new ArrayList<>();
-        for (long i = 1; i < 1000000; i++) {
-            Driver driver = Driver.builder().id(i).firstname("firstname" + i).build();
-            drivers.add(driver);
-        }
-        List<StringBuilder> outputDrivers = new ArrayList<>();
-        for (Driver d : drivers) {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(" ** ");
-            stringBuilder.append(d.getFirstname());
-            stringBuilder.append(" ; ");
-            outputDrivers.add(stringBuilder);
-        }
-        outputDrivers.forEach(System.out::println);
-
-        return outputDrivers;
-
-    }
-
     @Override
     public Driver deleteDriverById(Long id) {
+        log.info("Deleting the driver by id {} ", id);
         if (id != null) {
             Driver driverById = findDriverById(id);
-            if (driverById != null)
+            if (driverById != null) {
+                log.info("Deleting the driver by id {} ", id);
                 driverRepository.delete(driverById);
-            return driverById;
+                return driverById;
+            }
         }
-        return null;
+        throw new BadParamException("Please provide a valid driver id");
     }
 }
