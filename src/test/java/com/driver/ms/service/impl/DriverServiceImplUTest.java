@@ -155,13 +155,13 @@ class DriverServiceImplUTest {
                                 .id(4L)
                                 .firstname("firstname4")
                                 .build());
-                when(driverRepository.findByFirstname(anyString())).thenReturn(driversList);
+                when(driverRepository.findByFirstName(anyString())).thenReturn(driversList);
                 List<Driver> listOfDriver = driverService.findByFirstName("firstname1");
                 assertAll("Verify conditions for displaying the drivers",
                         () -> assertEquals(4, listOfDriver.size(), "An empty list of user"));
                 assertThat(listOfDriver).contains(driversList.get(0));
 
-                verify(driverRepository, times(1)).findByFirstname(anyString());
+                verify(driverRepository, times(1)).findByFirstName(anyString());
             }
 
             @DisplayName("When passing an invalid firstName criteria")
@@ -207,6 +207,30 @@ class DriverServiceImplUTest {
                     assertThrows(BadParamException.class, () -> driverService.findByAddressPhone(""), "Please provide a valid search criteria");
                     verify(driverRepository, times(0)).findByAddressPhone(anyString());
                 }
+            }
+        }
+
+        @DisplayName("When user provides the lastName search criteria ")
+        @Nested
+        class DriverByPhone {
+
+            @Test
+            @DisplayName(value = "Display driver based on the lastName search")
+            void should_return_a_driver_based_on_the_lastName_search_criteria() {
+                Driver driver = builder()
+                        .id(1L)
+                        .lastname("lastname1")
+                        .build();
+                when(driverRepository.findByLastName(anyString())).thenReturn(Optional.of(driver));
+
+                Driver driverByLastName = driverService.findDriverByLastName("last");
+                assertEquals("lastname1", driverByLastName.getLastname(), "The driver lastname must match the same as lastname1");
+                verify(driverRepository, times(1)).findByLastName(anyString());
+            }
+            @Test
+            @DisplayName(value = "Throw invalid lastName param exception")
+            void should_throw_an_exception_when_invalid_lastName() {
+                assertThrows(RuntimeException.class,()->driverService.findDriverByLastName(null));
             }
         }
     }

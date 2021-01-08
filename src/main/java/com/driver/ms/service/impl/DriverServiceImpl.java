@@ -10,6 +10,7 @@ import com.driver.ms.service.DriverService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -55,7 +56,7 @@ public class DriverServiceImpl implements DriverService {
             throw new BadParamException("Please provide a valid driver");
         }
         log.info("Fetching the list of driver based on the firstName criteria");
-        return driverRepository.findByFirstname(name);
+        return driverRepository.findByFirstName(name);
     }
 
     @Override
@@ -112,5 +113,19 @@ public class DriverServiceImpl implements DriverService {
             }
         }
         throw new BadParamException("Please provide a valid driver id");
+    }
+
+    @Override
+    public String getJourneyMetrics(Driver driver) {
+        return null;
+    }
+
+    @Override
+    public Driver findDriverByLastName(String lastName) {
+        if (!StringUtils.isEmpty(lastName)) {
+            return driverRepository.findByLastName(lastName)
+                    .orElseThrow(() -> new RuntimeException("Driver not found"));
+        }
+        throw new BadParamException("Please provide a valid lastName");
     }
 }
