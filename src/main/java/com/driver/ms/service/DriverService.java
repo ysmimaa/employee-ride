@@ -68,4 +68,17 @@ public interface DriverService {
      * @return deleted id
      */
     Driver deleteDriverById(Long id);
+
+    /**
+     * Method that return the driver's metrics
+     * @return driver's metrics
+     */
+    String getJourneyMetrics(Driver driver);
+
+    /**
+     * Method that return a driver by his lastName
+     * @param lastName
+     * @return
+     */
+    Driver findDriverByLastName(String lastName);
 }

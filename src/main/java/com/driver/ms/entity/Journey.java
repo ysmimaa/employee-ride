@@ -1,6 +1,7 @@
 package com.driver.ms.entity;
 
 
+import com.driver.ms.common.constant.JourneyStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,4 +26,5 @@ public class Journey extends IdEntityNonePersisted {
     private LocalDateTime endAt;
     private Company company;
     private Driver driver;
+    private JourneyStatus journeyStatus;
 }
