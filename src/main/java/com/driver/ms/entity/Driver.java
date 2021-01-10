@@ -4,9 +4,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
-
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static com.driver.ms.common.constant.DriverConstant.TABLE_NAME;
 

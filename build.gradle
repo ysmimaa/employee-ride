@@ -1,7 +1,9 @@
 plugins {
     id 'org.springframework.boot' version '2.2.10.RELEASE'
     id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id "org.sonarqube" version "3.0"
     id 'java'
+    id 'jacoco'
 }
 
 group = 'com.driver.ride'
@@ -50,6 +52,20 @@ dependencyManagement {
     }
 }
 
+sonarqube {
+    properties {
+        property 'sonar.host.url', 'http://localhost:9000'
+        property 'sonar.projectKey', 'driver-service'
+        property 'sonar.login', 'a0c18822b71e932db0d86ae074aa46821896aa1c'
+    }
+}
+
 test {
     useJUnitPlatform()
 }
+jacocoTestReport {
+    reports {
+        xml.enabled true
+    }
+}
+test.finalizedBy jacocoTestReport

@@ -55,7 +55,7 @@ public interface DriverService {
     Driver findByAddressPhone(String phone);
 
     /**
-     * Method returns a grouped driver's list by journey
+     * Method that return a grouped driver's list by journey
      *
      * @return the list of drivers grouped by journey
      */
@@ -71,14 +71,16 @@ public interface DriverService {
 
     /**
      * Method that return the driver's metrics
+     *
      * @return driver's metrics
      */
     String getJourneyMetrics(Driver driver);
 
     /**
      * Method that return a driver by his lastName
+     *
      * @param lastName
-     * @return
+     * @return driver by his lastName
      */
     Driver findDriverByLastName(String lastName);
 }

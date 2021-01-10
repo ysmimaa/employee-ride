@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.io.Serializable;
 
 @Builder
 @NoArgsConstructor
@@ -11,7 +12,7 @@ import javax.persistence.Embeddable;
 @Getter
 @Setter
 @Embeddable
-public class Address {
+public class Address implements Serializable {
 
     @Column(name = "PHONE")
     private String phone;

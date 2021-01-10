@@ -3,6 +3,7 @@ package com.driver.ms.integration;
 import com.driver.ms.common.constant.DriverConstant;
 import com.driver.ms.common.utils.JsonUtils;
 import com.driver.ms.entity.Driver;
+import com.driver.ms.repository.DriverRepository;
 import com.driver.ms.service.DriverService;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.collection.IsCollectionWithSize;
@@ -19,12 +20,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.List;
 
-import static com.driver.ms.common.constant.CommonConstant.DRIVER_URL_BASE;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class DriverIT {
+class DriverIT {
 
     @Autowired
     private MockMvc mockMvc;
@@ -32,11 +32,12 @@ public class DriverIT {
     @Autowired
     private DriverService driverService;
 
+
     /*@Disabled("Disable until defining the list of users behavior")
     @Test
     void should_return_a_list_of_users() throws Exception {
 
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get(DRIVER_URL_BASE.concat(DriverConstant.DRIVERS)))
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get(DriverConstant.BASE_URL.concat(DriverConstant.DRIVERS)))
                 .andReturn();
         String content = result.getResponse().getContentAsString();
 

@@ -1,5 +1,6 @@
 package com.driver.ms.service.impl;
 
+import com.driver.ms.common.constant.DriverConstant;
 import com.driver.ms.entity.Driver;
 import com.driver.ms.entity.Journey;
 import com.driver.ms.exception.BadParamException;
@@ -47,13 +48,13 @@ public class DriverServiceImpl implements DriverService {
             log.debug("Drive has been created");
             return driverRepository.save(driver);
         }
-        throw new BadParamException("Please provide a valid driver");
+        throw new BadParamException(DriverConstant.PLEASE_PROVIDE_A_VALID_DRIVER);
     }
 
     @Override
     public List<Driver> findByFirstName(String name) {
         if (name == null) {
-            throw new BadParamException("Please provide a valid driver");
+            throw new BadParamException(DriverConstant.PLEASE_PROVIDE_A_VALID_DRIVER);
         }
         log.info("Fetching the list of driver based on the firstName criteria");
         return driverRepository.findByFirstName(name);
@@ -72,7 +73,7 @@ public class DriverServiceImpl implements DriverService {
                 }
             }
         }
-        throw new BadParamException("Please provide a valid driver");
+        throw new BadParamException(DriverConstant.PLEASE_PROVIDE_A_VALID_DRIVER);
     }
 
     @Override

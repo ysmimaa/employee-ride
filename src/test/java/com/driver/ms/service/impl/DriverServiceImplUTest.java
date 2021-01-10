@@ -73,16 +73,16 @@ class DriverServiceImplUTest {
                 @Test
                 @DisplayName(value = "Then display drivers grouped by journey ")
                 void should_return_the_list_of_drivers() {
-                    Journey journey = Journey.builder()
-                            .id(1L)
-                            .nbrOfPlaces(22)
-                            .build();
-                    Driver expectedDriver = builder()
-                            .id(1L)
-                            .journey(journey)
-                            .build();
                     List<Driver> drivers = Arrays.asList(
-                            expectedDriver,
+                            builder()
+                                    .id(1L)
+                                    .journey(
+                                            Journey.builder()
+                                                    .id(1L)
+                                                    .nbrOfPlaces(22)
+                                                    .build()
+                                    )
+                                    .build(),
                             builder()
                                     .id(1L)
                                     .journey(
@@ -106,8 +106,8 @@ class DriverServiceImplUTest {
 
                     Map<Journey, List<Driver>> groupedDriversByJourney = driverService.getGroupedDriversByJourney();
                     assertAll("Check all the following asserts",
-                            () -> assertEquals(groupedDriversByJourney.size(), 3),
-                            () -> assertEquals(groupedDriversByJourney.get(journey).get(0), expectedDriver));
+                            () -> assertEquals(3, groupedDriversByJourney.size()),
+                            () -> assertEquals(drivers.get(0), groupedDriversByJourney.get(drivers.get(0).getJourney()).get(0)));
 
 
                 }
@@ -227,10 +227,11 @@ class DriverServiceImplUTest {
                 assertEquals("lastname1", driverByLastName.getLastname(), "The driver lastname must match the same as lastname1");
                 verify(driverRepository, times(1)).findByLastName(anyString());
             }
+
             @Test
             @DisplayName(value = "Throw invalid lastName param exception")
             void should_throw_an_exception_when_invalid_lastName() {
-                assertThrows(RuntimeException.class,()->driverService.findDriverByLastName(null));
+                assertThrows(RuntimeException.class, () -> driverService.findDriverByLastName(null));
             }
         }
     }

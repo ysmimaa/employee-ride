@@ -1,27 +1,34 @@
 package com.driver.ms.common.constant;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+
 /**
- * Interface that centralize the user constants
+ * Class that centralize the user constants
  */
-public interface DriverConstant {
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DriverConstant {
 
-    String TABLE_NAME = "driver";
+    public static final String BASE_URL = "/api/";
 
-    String DRIVERS = "drivers";
+    public static final String TABLE_NAME = "driver";
 
-    String DELETE_DRIVER_BY_ID = "driver/{id}";
+    public static final String DRIVERS = "drivers";
 
-    String FIND_DRIVER_BY_ID = "driver/findById/{id}";
+    public static final String DELETE_DRIVER_BY_ID = "driver/{id}";
 
-    String DRIVER_ADVANCED_SEARCH = "advanceFilter";
+    public static final String FIND_DRIVER_BY_ID = "driver/findById/{id}";
 
-    String CREATE_DRIVER = "create";
+    public static final String DRIVER_ADVANCED_SEARCH = "advanceFilter";
 
-    String UPDATE_DRIVER = "update";
+    public static final String CREATE_DRIVER = "create";
 
-    String BASIC_AUTH = "basic-auth";
+    public static final String UPDATE_DRIVER = "update";
 
-    String USER = "user";
+    public static final String BASIC_AUTH = "basic-auth";
 
-    String ID = "id";
+    public static final String USER = "user";
+
+    public static final String ID = "id";
+    public static final String PLEASE_PROVIDE_A_VALID_DRIVER = "Please provide a valid driver";
 }

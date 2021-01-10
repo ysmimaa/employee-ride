@@ -14,16 +14,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
-
-import static com.driver.ms.common.constant.CommonConstant.DRIVER_URL_BASE;
 
 @CrossOrigin(origins = {"http://localhost:4200"})
 @Tag(name = DriverConstant.TABLE_NAME, description = "Driver's APIs")
 @RestController
-@RequestMapping(DRIVER_URL_BASE)
+@RequestMapping(DriverConstant.BASE_URL)
 public class DriverRestController {
 
     private DriverService driverService;
@@ -67,7 +63,7 @@ public class DriverRestController {
         if (id != null) {
             return new ResponseEntity<>(driverService.findDriverById(id), HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @DeleteMapping(path = DriverConstant.DELETE_DRIVER_BY_ID)

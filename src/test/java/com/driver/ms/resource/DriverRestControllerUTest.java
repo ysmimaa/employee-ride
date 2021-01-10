@@ -5,6 +5,7 @@ import com.driver.ms.common.utils.JsonUtils;
 import com.driver.ms.entity.Address;
 import com.driver.ms.entity.Driver;
 import com.driver.ms.service.DriverService;
+import io.swagger.v3.core.util.Json;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,12 +24,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.driver.ms.common.constant.CommonConstant.DRIVER_URL_BASE;
 import static com.driver.ms.entity.Driver.builder;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-class DriverRestControllerTest {
+class DriverRestControllerUTest {
 
     @InjectMocks
     private DriverRestController driverRestController;
@@ -58,7 +58,7 @@ class DriverRestControllerTest {
                         .build())
         );
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(DRIVER_URL_BASE + DriverConstant.DRIVERS))
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(DriverConstant.BASE_URL + DriverConstant.DRIVERS))
                 .andReturn();
 
         String content = mvcResult.getResponse().getContentAsString();
@@ -76,7 +76,7 @@ class DriverRestControllerTest {
         //When
         when(driverService.getListOfDriver()).thenReturn(new ArrayList<>());
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(DRIVER_URL_BASE + DriverConstant.DRIVERS))
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(DriverConstant.BASE_URL + DriverConstant.DRIVERS))
                 .andReturn();
 
         String content = mvcResult.getResponse().getContentAsString();
@@ -113,7 +113,7 @@ class DriverRestControllerTest {
 
         when(driverService.findByFirstName(anyString())).thenReturn(driversFound);
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(DRIVER_URL_BASE + DriverConstant.DRIVER_ADVANCED_SEARCH)
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(DriverConstant.BASE_URL + DriverConstant.DRIVER_ADVANCED_SEARCH)
                 .accept(MediaType.APPLICATION_JSON)
                 .param("firstname", "firstname")
                 .param("null", "null")
@@ -136,7 +136,7 @@ class DriverRestControllerTest {
 
         when(driverService.findByFirstName(anyString())).thenReturn(driversFound);
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(DRIVER_URL_BASE + DriverConstant.DRIVER_ADVANCED_SEARCH)
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(DriverConstant.BASE_URL + DriverConstant.DRIVER_ADVANCED_SEARCH)
                 .accept(MediaType.APPLICATION_JSON)
                 .param("firstname", "firstname")
                 .param("null", "null")
@@ -161,7 +161,7 @@ class DriverRestControllerTest {
 
         when(driverService.deleteDriverById(anyLong())).thenReturn(driver);
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete(DRIVER_URL_BASE + DriverConstant.DELETE_DRIVER_BY_ID, "1"))
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.delete(DriverConstant.BASE_URL + DriverConstant.DELETE_DRIVER_BY_ID, "1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
@@ -183,7 +183,7 @@ class DriverRestControllerTest {
 
         when(driverService.createDriver(any(Driver.class))).thenReturn(driver);
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(DRIVER_URL_BASE + DriverConstant.CREATE_DRIVER)
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(DriverConstant.BASE_URL + DriverConstant.CREATE_DRIVER)
                 .content(JsonUtils.serializeObjectToString(driver))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -196,6 +196,67 @@ class DriverRestControllerTest {
         org.assertj.core.api.Assertions.assertThat(createdDriver.getId()).isEqualTo(driver.getId());
 
         verify(driverService, times(1)).createDriver(any(Driver.class));
+    }
+
+    @Test
+    void should_return_driver_by_his_id() throws Exception {
+
+        Driver driverToFind = builder().id(1L).build();
+
+        when(driverService.findDriverById(anyLong())).thenReturn(driverToFind);
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(DriverConstant.BASE_URL + DriverConstant.FIND_DRIVER_BY_ID, "1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+                .andReturn();
+
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+
+        Driver foundDriver = JsonUtils.deserializeStringToObject(contentAsString, Driver.class);
+
+        org.assertj.core.api.Assertions.assertThat(driverToFind).isEqualToComparingFieldByField(foundDriver);
+
+        verify(driverService, times(1)).findDriverById(anyLong());
+
+    }
+
+    @Test
+    void should_return_bad_request_when_driver_id_is_invalid() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(DriverConstant.BASE_URL + DriverConstant.FIND_DRIVER_BY_ID, "")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
+                .andReturn();
+    }
+
+    @Test
+    void should_update_a_provided_driver() throws Exception {
+
+        Driver driverToUpdate = builder().id(1L).build();
+
+        when(driverService.updateDriver(any(Driver.class))).thenReturn(driverToUpdate);
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.put(DriverConstant.BASE_URL + DriverConstant.UPDATE_DRIVER)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtils.serializeObjectToString(driverToUpdate)))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+                .andReturn();
+
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+
+        Driver updatedDriver = JsonUtils.deserializeStringToObject(contentAsString, Driver.class);
+
+        org.assertj.core.api.Assertions.assertThat(driverToUpdate).isEqualToComparingFieldByField(updatedDriver);
+
+        verify(driverService, times(1)).updateDriver(any(Driver.class));
+
+    }
+
+    @Test
+    void should_return_bad_request_when_driver_provided_is_invalid() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.put(DriverConstant.BASE_URL + DriverConstant.UPDATE_DRIVER)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
+                .andReturn();
     }
 
 }
