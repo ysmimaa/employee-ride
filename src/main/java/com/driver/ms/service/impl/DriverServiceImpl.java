@@ -5,7 +5,6 @@ import com.driver.ms.entity.Driver;
 import com.driver.ms.entity.Journey;
 import com.driver.ms.exception.BadParamException;
 import com.driver.ms.exception.DriverNotFoundException;
-import com.driver.ms.exception.ExistingDriverException;
 import com.driver.ms.repository.DriverRepository;
 import com.driver.ms.service.DriverService;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +14,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -37,18 +37,12 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public Driver createDriver(Driver driver) {
         log.info("Create a new driver");
-        if (driver != null) {
-            Long driverId = driver.getId();
-            Driver foundDriverById = findDriverById(driverId);
-            if (driverId != null && foundDriverById != null
-                    && foundDriverById.getId().compareTo(driverId) == 0) {
-                log.error("Driver {} already exist", driver);
-                throw new ExistingDriverException("Driver already exist");
-            }
-            log.debug("Drive has been created");
-            return driverRepository.save(driver);
+        if (driver == null) {
+            throw new BadParamException(DriverConstant.PLEASE_PROVIDE_A_VALID_DRIVER);
         }
-        throw new BadParamException(DriverConstant.PLEASE_PROVIDE_A_VALID_DRIVER);
+        log.debug("Drive has been created");
+        return driverRepository.save(driver);
+
     }
 
     @Override
@@ -57,33 +51,35 @@ public class DriverServiceImpl implements DriverService {
             throw new BadParamException(DriverConstant.PLEASE_PROVIDE_A_VALID_DRIVER);
         }
         log.info("Fetching the list of driver based on the firstName criteria");
-        return driverRepository.findByFirstName(name);
+        return driverRepository.findByFirstname(name);
     }
 
     @Override
     public Driver updateDriver(Driver driver) {
-        if (driver != null) {
-            Long driverId = driver.getId();
-            if (driverId != null) {
-                log.debug("find the driver by id : {} ", driverId);
-                Driver driverById = findDriverById(driverId);
-                if (driverById != null) {
-                    log.debug("The driver has been saved");
-                    return driverRepository.save(driver);
-                }
-            }
+        if (driver == null) {
+            throw new BadParamException(DriverConstant.PLEASE_PROVIDE_A_VALID_DRIVER);
         }
-        throw new BadParamException(DriverConstant.PLEASE_PROVIDE_A_VALID_DRIVER);
+        Long driverId = driver.getId();
+        return Optional.of(findDriverById(driverId))
+                .map(driverToUpdate -> {
+                    driverToUpdate.setFirstname(driver.getFirstname());
+                    driverToUpdate.setLastname(driver.getLastname());
+                    driverToUpdate.setJourney(driver.getJourney());
+                    driverToUpdate.setFirstname(driver.getFirstname());
+
+                    log.info("Updating driver with id {} : ", driver.getId());
+                    return driverRepository.save(driverToUpdate);
+                }).orElseThrow();
     }
 
     @Override
     public Driver findDriverById(Long id) {
-        if (id != null) {
-            log.debug("Find driver by id : {} ", id);
-            return driverRepository.findById(id)
-                    .orElseThrow(() -> new DriverNotFoundException("Driver with id " + id + " not found"));
+        if (id == null) {
+            throw new BadParamException(DriverConstant.PLEASE_PROVIDE_A_VALID_DRIVER);
         }
-        throw new BadParamException("Please provide a valid driver id");
+        log.info("Find driver by id : {} ", id);
+        return driverRepository.findById(id)
+                .orElseThrow(() -> new DriverNotFoundException("Driver with id " + id + " not found"));
     }
 
     @Override
@@ -92,29 +88,31 @@ public class DriverServiceImpl implements DriverService {
             log.error("The argument {} is not valid", phone);
             throw new BadParamException("Please provide a valid phone number");
         }
-        log.debug("Find driver by phone {} : ", phone);
+        log.info("Find driver by phone {} : ", phone);
         return driverRepository.findByAddressPhone(phone)
                 .orElseThrow(() -> new DriverNotFoundException("Driver with id " + phone + " not found"));
     }
 
     @Override
     public Map<Journey, List<Driver>> getGroupedDriversByJourney() {
-        return driverRepository.findAll().stream().collect(Collectors.groupingBy(Driver::getJourney));
+        return driverRepository.findAll().stream()
+                .collect(Collectors.groupingBy(Driver::getJourney));
     }
 
     @Override
     public Driver deleteDriverById(Long id) {
-        log.info("Deleting the driver by id {} ", id);
-        if (id != null) {
-            Driver driverById = findDriverById(id);
-            if (driverById != null) {
-                log.info("Deleting the driver by id {} ", id);
-                driverRepository.delete(driverById);
-                return driverById;
-            }
+        if (id == null) {
+            throw new BadParamException("Please provide a valid driver id");
         }
-        throw new BadParamException("Please provide a valid driver id");
+        log.info("Deleting the driver by id {} ", id);
+        return Optional.of(findDriverById(id))
+                .map(driver -> {
+                    log.info("The driver with the id {} has been deleted", id);
+                    driverRepository.delete(driver);
+                    return driver;
+                }).orElse(null);
     }
+
 
     @Override
     public String getJourneyMetrics(Driver driver) {
@@ -123,10 +121,11 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public Driver findDriverByLastName(String lastName) {
-        if (!StringUtils.isEmpty(lastName)) {
-            return driverRepository.findByLastName(lastName)
-                    .orElseThrow(() -> new RuntimeException("Driver not found"));
+        if (StringUtils.isEmpty(lastName)) {
+            throw new BadParamException("Please provide a valid lastName");
         }
-        throw new BadParamException("Please provide a valid lastName");
+        log.info("Finding the driver {} ", lastName);
+        return driverRepository.findByLastname(lastName)
+                .orElseThrow(() -> new RuntimeException("Driver not found"));
     }
 }

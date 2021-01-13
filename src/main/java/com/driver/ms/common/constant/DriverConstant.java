@@ -30,5 +30,6 @@ public final class DriverConstant {
     public static final String USER = "user";
 
     public static final String ID = "id";
+
     public static final String PLEASE_PROVIDE_A_VALID_DRIVER = "Please provide a valid driver";
 }

@@ -14,7 +14,7 @@ public interface DriverRepository extends JpaRepository<Driver, Long> {
      * @param firstname
      * @return list of drivers found
      */
-    List<Driver> findByFirstName(@Param("firstname") String firstname);
+    List<Driver> findByFirstname(@Param("firstname") String firstname);
 
     /**
      * Method for retrieving the driver by the phone search criteria
@@ -30,5 +30,5 @@ public interface DriverRepository extends JpaRepository<Driver, Long> {
      * @param lastName
      * @return
      */
-    Optional<Driver> findByLastName(String lastName);
+    Optional<Driver> findByLastname(String lastName);
 }

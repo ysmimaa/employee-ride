@@ -32,7 +32,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.flywaydb:flyway-core'
     compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    //developmentOnly 'org.springframework.boot:spring-boot-devtools'
     implementation 'org.springdoc:springdoc-openapi-ui:1.4.8'
     implementation 'org.springdoc:springdoc-openapi-core:1.1.49'
     runtimeOnly 'org.postgresql:postgresql'
@@ -44,7 +44,9 @@ dependencies {
     //implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-    implementation('com.fasterxml.jackson.datatype:jackson-datatype-jsr310')
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    testImplementation 'io.cucumber:cucumber-java:6.8.1'
+    testImplementation 'io.cucumber:cucumber-junit:6.8.1'
 }
 dependencyManagement {
     imports {

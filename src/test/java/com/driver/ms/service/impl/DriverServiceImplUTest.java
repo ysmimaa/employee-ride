@@ -4,12 +4,8 @@ import com.driver.ms.entity.Address;
 import com.driver.ms.entity.Driver;
 import com.driver.ms.entity.Journey;
 import com.driver.ms.exception.BadParamException;
-import com.driver.ms.exception.ExistingDriverException;
 import com.driver.ms.repository.DriverRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
@@ -155,13 +151,13 @@ class DriverServiceImplUTest {
                                 .id(4L)
                                 .firstname("firstname4")
                                 .build());
-                when(driverRepository.findByFirstName(anyString())).thenReturn(driversList);
+                when(driverRepository.findByFirstname(anyString())).thenReturn(driversList);
                 List<Driver> listOfDriver = driverService.findByFirstName("firstname1");
                 assertAll("Verify conditions for displaying the drivers",
                         () -> assertEquals(4, listOfDriver.size(), "An empty list of user"));
                 assertThat(listOfDriver).contains(driversList.get(0));
 
-                verify(driverRepository, times(1)).findByFirstName(anyString());
+                verify(driverRepository, times(1)).findByFirstname(anyString());
             }
 
             @DisplayName("When passing an invalid firstName criteria")
@@ -221,11 +217,11 @@ class DriverServiceImplUTest {
                         .id(1L)
                         .lastname("lastname1")
                         .build();
-                when(driverRepository.findByLastName(anyString())).thenReturn(Optional.of(driver));
+                when(driverRepository.findByLastname(anyString())).thenReturn(Optional.of(driver));
 
                 Driver driverByLastName = driverService.findDriverByLastName("last");
                 assertEquals("lastname1", driverByLastName.getLastname(), "The driver lastname must match the same as lastname1");
-                verify(driverRepository, times(1)).findByLastName(anyString());
+                verify(driverRepository, times(1)).findByLastname(anyString());
             }
 
             @Test
@@ -257,11 +253,6 @@ class DriverServiceImplUTest {
                         )
                         .build();
 
-                Driver foundDriver = builder()
-                        .id(2L)
-                        .build();
-
-                when(driverRepository.findById(anyLong())).thenReturn(Optional.of(foundDriver));
                 when(driverRepository.save(any(Driver.class))).thenReturn(driverToPersist);
 
                 Driver createdDriver = driverService.createDriver(driverToPersist);
@@ -269,7 +260,6 @@ class DriverServiceImplUTest {
                 assertAll("Check conditions",
                         () -> assertEquals(driverToPersist, createdDriver, "A new driver has been created"));
                 verify(driverRepository, times(1)).save(any(Driver.class));
-                verify(driverRepository, times(1)).findById(anyLong());
 
             }
         }
@@ -283,24 +273,6 @@ class DriverServiceImplUTest {
             void should_throw_exception_when_trying_to_add_an_empty_or_invalid_driver() {
                 assertThrows(BadParamException.class, () -> driverService.createDriver(null),
                         "should throw a NullPointerException exception");
-            }
-        }
-
-        @DisplayName("When user passes an existing driver to be saved")
-        @Nested
-        class NewExistingDriverThrowException {
-
-            @DisplayName("Then throw existing driver exception")
-            @Test
-            void should_throw_existing_drive_exception() {
-                //Given
-                Driver exitingDriver = builder().id(1L).build();
-
-                //When
-                when(driverRepository.findById(anyLong())).thenReturn(Optional.of(exitingDriver));
-                assertThrows(ExistingDriverException.class, () -> driverService.createDriver(exitingDriver));
-                verify(driverRepository, times(1)).findById(anyLong());
-
             }
         }
     }
@@ -333,6 +305,59 @@ class DriverServiceImplUTest {
 
                 verify(driverRepository, times(1)).findById(anyLong());
                 verify(driverRepository, times(1)).save(any(Driver.class));
+            }
+        }
+
+        @Nested
+        @DisplayName("When the user passes an invalid driver to be updated")
+        class DriverToBeUpdatedWithInvalidInput {
+
+            @DisplayName("Then invalid parameter exception is thrown")
+            @Test
+            void should_throw_an_invalid_parameter_exception_when_passing_invalid_driver() {
+                Assertions.assertThrows(BadParamException.class, () -> driverService.updateDriver(null));
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("Given a driver to be deleted")
+    class DeleteDriver {
+        @Nested
+        @DisplayName("When the user passes a valid id of the driver to be deleted")
+        class DriverToBeDeleted {
+
+            @DisplayName("Then the driver with the id is deleted")
+            @Test
+            void should_delete_a_driver_by_his_id() {
+                Driver foundDriver = builder()
+                        .id(1L)
+                        .firstname("driver1")
+                        .address(
+                                Address.builder()
+                                        .phone("062323236")
+                                        .build()
+                        )
+                        .build();
+                when(driverRepository.findById(anyLong())).thenReturn(Optional.of(foundDriver));
+                doNothing().when(driverRepository).delete(any(Driver.class));
+
+                Driver deletedDriver = driverService.deleteDriverById(foundDriver.getId());
+
+                assertAll("Check condition",
+                        () -> assertEquals(deletedDriver, foundDriver, "A driver has been deleted"));
+                verify(driverRepository, times(1)).findById(anyLong());
+            }
+        }
+
+        @Nested
+        @DisplayName("When the user passes an invalid id")
+        class DriverToBeDeletedWithInvalidInput {
+
+            @DisplayName("Then invalid parameter exception is thrown")
+            @Test
+            void should_throw_an_invalid_parameter_exception_when_passing_invalid_driver() {
+                Assertions.assertThrows(BadParamException.class, () -> driverService.deleteDriverById(null));
             }
         }
     }
