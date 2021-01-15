@@ -1,5 +1,7 @@
 package com.driver.ms.service.impl;
 
+import com.driver.ms.common.dto.DriverDto;
+import com.driver.ms.common.factory.DriverFactory;
 import com.driver.ms.entity.Address;
 import com.driver.ms.entity.Driver;
 import com.driver.ms.entity.Journey;
@@ -27,6 +29,9 @@ class DriverServiceImplUTest {
 
     @Mock
     private DriverRepository driverRepository;
+
+    @Mock
+    private DriverFactory driverFactory;
 
     @BeforeEach
     void init() {
@@ -243,8 +248,15 @@ class DriverServiceImplUTest {
             @DisplayName("Then a new driver should be created and added to the list")
             @Test
             void should_create_a_new_driver() {
-                Driver driverToPersist = builder()
-                        .id(1L)
+                DriverDto driverDtoToBePersisted = DriverDto.builder()
+                        .firstName("driver1")
+                        .address(
+                                Address.builder()
+                                        .phone("062323236")
+                                        .build()
+                        )
+                        .build();
+                Driver driverToPersist = Driver.builder()
                         .firstname("driver1")
                         .address(
                                 Address.builder()
@@ -254,11 +266,13 @@ class DriverServiceImplUTest {
                         .build();
 
                 when(driverRepository.save(any(Driver.class))).thenReturn(driverToPersist);
+                when(driverFactory.convertDriverDtoToDriverEntity(any(DriverDto.class))).thenReturn(driverToPersist);
+                when(driverFactory.convertDriverEntityToDriverDto(any(Driver.class))).thenReturn(driverDtoToBePersisted);
 
-                Driver createdDriver = driverService.createDriver(driverToPersist);
+                DriverDto createdDriver = driverService.createDriver(driverDtoToBePersisted);
 
                 assertAll("Check conditions",
-                        () -> assertEquals(driverToPersist, createdDriver, "A new driver has been created"));
+                        () -> assertEquals(driverDtoToBePersisted, createdDriver, "A new driver has been created"));
                 verify(driverRepository, times(1)).save(any(Driver.class));
 
             }
@@ -296,10 +310,19 @@ class DriverServiceImplUTest {
                                         .build()
                         )
                         .build();
+                DriverDto driverDtoToBeUpdated = DriverDto.builder()
+                        .id(1L)
+                        .firstName("driver1")
+                        .address(
+                                Address.builder()
+                                        .phone("062323236")
+                                        .build()
+                        )
+                        .build();
                 when(driverRepository.findById(anyLong())).thenReturn(Optional.of(driver));
                 when(driverRepository.save(any(Driver.class))).thenReturn(driver);
 
-                Driver updatedDriver = driverService.updateDriver(driver);
+                Driver updatedDriver = driverService.updateDriver(driverDtoToBeUpdated);
                 assertAll("Check condition",
                         () -> assertEquals(driver, updatedDriver, "A driver has been updated"));
 
@@ -345,7 +368,7 @@ class DriverServiceImplUTest {
                 Driver deletedDriver = driverService.deleteDriverById(foundDriver.getId());
 
                 assertAll("Check condition",
-                        () -> assertEquals(deletedDriver, foundDriver, "A driver has been deleted"));
+                        () -> assertEquals(foundDriver, deletedDriver, "A driver has been deleted"));
                 verify(driverRepository, times(1)).findById(anyLong());
             }
         }

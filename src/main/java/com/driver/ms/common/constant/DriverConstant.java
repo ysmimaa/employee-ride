@@ -21,7 +21,7 @@ public final class DriverConstant {
 
     public static final String DRIVER_ADVANCED_SEARCH = "advanceFilter";
 
-    public static final String CREATE_DRIVER = "create";
+    public static final String CREATE = "create";
 
     public static final String UPDATE_DRIVER = "update";
 
@@ -32,4 +32,5 @@ public final class DriverConstant {
     public static final String ID = "id";
 
     public static final String PLEASE_PROVIDE_A_VALID_DRIVER = "Please provide a valid driver";
+    public static final String DRIVER = "driver/";
 }

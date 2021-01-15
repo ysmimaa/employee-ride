@@ -1,6 +1,7 @@
 package com.driver.ms.resource;
 
 import com.driver.ms.common.constant.DriverConstant;
+import com.driver.ms.common.dto.DriverDto;
 import com.driver.ms.entity.Driver;
 import com.driver.ms.service.DriverService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = {"http://localhost:4200"})
 @Tag(name = DriverConstant.TABLE_NAME, description = "Driver's APIs")
 @RestController
 @RequestMapping(DriverConstant.BASE_URL)
@@ -60,36 +60,35 @@ public class DriverRestController {
 
     @GetMapping(path = DriverConstant.FIND_DRIVER_BY_ID)
     public ResponseEntity<Driver> getDriverById(@PathVariable(name = DriverConstant.ID) Long id) {
-        if (id != null) {
-            return new ResponseEntity<>(driverService.findDriverById(id), HttpStatus.OK);
+        if (id == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(driverService.findDriverById(id), HttpStatus.OK);
     }
 
     @DeleteMapping(path = DriverConstant.DELETE_DRIVER_BY_ID)
     public ResponseEntity<Driver> deleteDriver(@PathVariable(name = DriverConstant.ID) Long id) {
-        if (id != null) {
-            return new ResponseEntity<>(driverService.deleteDriverById(id), HttpStatus.OK);
+        if (id == null) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(driverService.deleteDriverById(id), HttpStatus.OK);
     }
 
-    @PostMapping(path = DriverConstant.CREATE_DRIVER)
-    public ResponseEntity<Driver> createDriver(@RequestBody Driver driver) {
-        if (driver != null) {
-            Driver createdDriver = driverService.createDriver(driver);
-            return new ResponseEntity<>(createdDriver, HttpStatus.CREATED);
+    @PostMapping(path = DriverConstant.DRIVER + DriverConstant.CREATE)
+    public ResponseEntity<DriverDto> createDriver(@RequestBody DriverDto driverDto) {
+        if (driverDto == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(driverService.createDriver(driverDto), HttpStatus.CREATED);
     }
 
     @PutMapping(path = DriverConstant.UPDATE_DRIVER)
-    public ResponseEntity<Driver> updateDriver(@RequestBody Driver driver) {
-        if (driver != null) {
-            Driver updatedDriver = driverService.updateDriver(driver);
-            return new ResponseEntity<>(updatedDriver, HttpStatus.OK);
+    public ResponseEntity<Driver> updateDriver(@RequestBody DriverDto driverDto) {
+        if (driverDto == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        Driver updatedDriver = driverService.updateDriver(driverDto);
+        return new ResponseEntity<>(updatedDriver, HttpStatus.OK);
     }
 
     @GetMapping(path = DriverConstant.USER + DriverConstant.BASIC_AUTH)

@@ -1,4 +1,4 @@
-package com.driver.ms.automation;
+package com.driver.ms.automation.stepDef;
 
 import com.driver.ms.entity.Driver;
 import com.driver.ms.service.DriverService;

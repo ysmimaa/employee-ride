@@ -1,5 +1,6 @@
 package com.driver.ms.service;
 
+import com.driver.ms.common.dto.DriverDto;
 import com.driver.ms.entity.Driver;
 import com.driver.ms.entity.Journey;
 
@@ -18,10 +19,10 @@ public interface DriverService {
     /**
      * Method for creating a driver
      *
-     * @param driver
+     * @param driverDto
      * @return the driver created
      */
-    Driver createDriver(Driver driver);
+    DriverDto createDriver(DriverDto driverDto);
 
     /**
      * Method that return a list of found drivers base on the criteria
@@ -33,10 +34,10 @@ public interface DriverService {
     /**
      * Method that update an existing driver
      *
-     * @param driver given driver
+     * @param driverDto given driver
      * @return the driver that has been updated
      */
-    Driver updateDriver(Driver driver);
+    Driver updateDriver(DriverDto driverDto);
 
     /**
      * Method that return a driver by his id

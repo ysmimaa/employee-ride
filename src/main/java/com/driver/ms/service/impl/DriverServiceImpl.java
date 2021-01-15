@@ -1,6 +1,9 @@
 package com.driver.ms.service.impl;
 
 import com.driver.ms.common.constant.DriverConstant;
+import com.driver.ms.common.dto.DriverDto;
+import com.driver.ms.common.factory.DriverFactory;
+import com.driver.ms.common.factory.DriverFactoryImpl;
 import com.driver.ms.entity.Driver;
 import com.driver.ms.entity.Journey;
 import com.driver.ms.exception.BadParamException;
@@ -22,10 +25,12 @@ import java.util.stream.Collectors;
 public class DriverServiceImpl implements DriverService {
 
     private DriverRepository driverRepository;
+    private DriverFactory driverFactory;
 
     @Autowired
-    public DriverServiceImpl(final DriverRepository driverRepository) {
+    public DriverServiceImpl(final DriverRepository driverRepository, final DriverFactory driverFactory) {
         this.driverRepository = driverRepository;
+        this.driverFactory = driverFactory;
     }
 
     @Override
@@ -35,13 +40,14 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public Driver createDriver(Driver driver) {
+    public DriverDto createDriver(DriverDto driverDto) {
         log.info("Create a new driver");
-        if (driver == null) {
+        if (driverDto == null) {
             throw new BadParamException(DriverConstant.PLEASE_PROVIDE_A_VALID_DRIVER);
         }
         log.debug("Drive has been created");
-        return driverRepository.save(driver);
+        Driver savedDriver = driverRepository.save(driverFactory.convertDriverDtoToDriverEntity(driverDto));
+        return driverFactory.convertDriverEntityToDriverDto(savedDriver);
 
     }
 
@@ -55,19 +61,17 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public Driver updateDriver(Driver driver) {
-        if (driver == null) {
+    public Driver updateDriver(DriverDto driverDto) {
+        if (driverDto == null) {
             throw new BadParamException(DriverConstant.PLEASE_PROVIDE_A_VALID_DRIVER);
         }
-        Long driverId = driver.getId();
+        Long driverId = driverDto.getId();
         return Optional.of(findDriverById(driverId))
                 .map(driverToUpdate -> {
-                    driverToUpdate.setFirstname(driver.getFirstname());
-                    driverToUpdate.setLastname(driver.getLastname());
-                    driverToUpdate.setJourney(driver.getJourney());
-                    driverToUpdate.setFirstname(driver.getFirstname());
+                    driverToUpdate.setFirstname(driverDto.getFirstName());
+                    driverToUpdate.setLastname(driverDto.getLastName());
 
-                    log.info("Updating driver with id {} : ", driver.getId());
+                    log.info("Updating driverDto with id {} : ", driverDto.getId());
                     return driverRepository.save(driverToUpdate);
                 }).orElseThrow();
     }

@@ -1,11 +1,11 @@
 package com.driver.ms.resource;
 
 import com.driver.ms.common.constant.DriverConstant;
+import com.driver.ms.common.dto.DriverDto;
 import com.driver.ms.common.utils.JsonUtils;
 import com.driver.ms.entity.Address;
 import com.driver.ms.entity.Driver;
 import com.driver.ms.service.DriverService;
-import io.swagger.v3.core.util.Json;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -177,13 +177,13 @@ class DriverRestControllerUTest {
 
     @Test
     void should_create_a_driver() throws Exception {
-        Driver driver = Driver.builder()
-                .id(1L)
+        DriverDto driver = DriverDto.builder()
+                .firstName("firstname")
                 .build();
 
-        when(driverService.createDriver(any(Driver.class))).thenReturn(driver);
+        when(driverService.createDriver(any(DriverDto.class))).thenReturn(driver);
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(DriverConstant.BASE_URL + DriverConstant.CREATE_DRIVER)
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post(DriverConstant.BASE_URL + DriverConstant.DRIVER + DriverConstant.CREATE)
                 .content(JsonUtils.serializeObjectToString(driver))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -191,11 +191,11 @@ class DriverRestControllerUTest {
                 .andReturn();
 
         String contentAsString = mvcResult.getResponse().getContentAsString();
-        Driver createdDriver = JsonUtils.deserializeStringToObject(contentAsString, Driver.class);
+        DriverDto createdDriver = JsonUtils.deserializeStringToObject(contentAsString, DriverDto.class);
 
         org.assertj.core.api.Assertions.assertThat(createdDriver.getId()).isEqualTo(driver.getId());
 
-        verify(driverService, times(1)).createDriver(any(Driver.class));
+        verify(driverService, times(1)).createDriver(any(DriverDto.class));
     }
 
     @Test
@@ -233,7 +233,7 @@ class DriverRestControllerUTest {
 
         Driver driverToUpdate = builder().id(1L).build();
 
-        when(driverService.updateDriver(any(Driver.class))).thenReturn(driverToUpdate);
+        when(driverService.updateDriver(any(DriverDto.class))).thenReturn(driverToUpdate);
 
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.put(DriverConstant.BASE_URL + DriverConstant.UPDATE_DRIVER)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -247,7 +247,7 @@ class DriverRestControllerUTest {
 
         org.assertj.core.api.Assertions.assertThat(driverToUpdate).isEqualToComparingFieldByField(updatedDriver);
 
-        verify(driverService, times(1)).updateDriver(any(Driver.class));
+        verify(driverService, times(1)).updateDriver(any(DriverDto.class));
 
     }
 
