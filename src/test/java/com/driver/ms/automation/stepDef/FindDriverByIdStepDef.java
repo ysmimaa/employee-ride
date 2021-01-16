@@ -15,11 +15,11 @@ public class FindDriverByIdStepDef {
 
     @When("I provide a valid firstName")
     public void iProvideAValidFirstName() {
-        driverServiceByFirstName = driverService.findByFirstName("youssef");
+        //driverServiceByFirstName = driverService.findByFirstName("youssef");
     }
 
     @Then("the driver with the firstName should be returned")
     public void theDriverWithTheFirstNameShouldBeReturned() {
-        Assertions.assertThat(driverServiceByFirstName).contains();
+        //Assertions.assertThat(driverServiceByFirstName).contains();
     }
 }

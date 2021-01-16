@@ -27,7 +27,9 @@ public final class DriverConstant {
 
     public static final String BASIC_AUTH = "basic-auth";
 
-    public static final String USER = "user";
+    public static final String USER = "/user";
+
+    public static final String FIND_BY_FIRSTNAME = "/findByFirstName";
 
     public static final String ID = "id";
 

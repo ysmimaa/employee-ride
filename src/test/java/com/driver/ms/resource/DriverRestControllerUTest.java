@@ -113,7 +113,7 @@ class DriverRestControllerUTest {
 
         when(driverService.findByFirstName(anyString())).thenReturn(driversFound);
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(DriverConstant.BASE_URL + DriverConstant.DRIVER_ADVANCED_SEARCH)
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(DriverConstant.BASE_URL + DriverConstant.USER + DriverConstant.FIND_BY_FIRSTNAME)
                 .accept(MediaType.APPLICATION_JSON)
                 .param("firstname", "firstname")
                 .param("null", "null")
@@ -136,7 +136,7 @@ class DriverRestControllerUTest {
 
         when(driverService.findByFirstName(anyString())).thenReturn(driversFound);
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(DriverConstant.BASE_URL + DriverConstant.DRIVER_ADVANCED_SEARCH)
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(DriverConstant.BASE_URL + DriverConstant.USER + DriverConstant.FIND_BY_FIRSTNAME)
                 .accept(MediaType.APPLICATION_JSON)
                 .param("firstname", "firstname")
                 .param("null", "null")
@@ -151,6 +151,16 @@ class DriverRestControllerUTest {
 
         verify(driverService, times(1)).findByFirstName(anyString());
 
+    }
+
+    @Test
+    void should_return_bad_request_when_providing_invalid_firstName() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(DriverConstant.BASE_URL + DriverConstant.USER + DriverConstant.FIND_BY_FIRSTNAME)
+                .accept(MediaType.APPLICATION_JSON)
+                .param("firstname", "")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn();
     }
 
     @Test
@@ -173,7 +183,6 @@ class DriverRestControllerUTest {
         verify(driverService, times(1)).deleteDriverById(anyLong());
 
     }
-
 
     @Test
     void should_create_a_driver() throws Exception {
@@ -200,7 +209,6 @@ class DriverRestControllerUTest {
 
     @Test
     void should_return_driver_by_his_id() throws Exception {
-
         Driver driverToFind = builder().id(1L).build();
 
         when(driverService.findDriverById(anyLong())).thenReturn(driverToFind);
@@ -221,21 +229,13 @@ class DriverRestControllerUTest {
     }
 
     @Test
-    void should_return_bad_request_when_driver_id_is_invalid() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(DriverConstant.BASE_URL + DriverConstant.FIND_DRIVER_BY_ID, "")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
-                .andReturn();
-    }
-
-    @Test
     void should_update_a_provided_driver() throws Exception {
 
         Driver driverToUpdate = builder().id(1L).build();
 
         when(driverService.updateDriver(any(DriverDto.class))).thenReturn(driverToUpdate);
 
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.put(DriverConstant.BASE_URL + DriverConstant.UPDATE_DRIVER)
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.put(DriverConstant.BASE_URL + DriverConstant.DRIVER + DriverConstant.UPDATE_DRIVER)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtils.serializeObjectToString(driverToUpdate)))
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
@@ -252,11 +252,15 @@ class DriverRestControllerUTest {
     }
 
     @Test
-    void should_return_bad_request_when_driver_provided_is_invalid() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.put(DriverConstant.BASE_URL + DriverConstant.UPDATE_DRIVER)
+    void should_return_true_when_trying_to_authenticate() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(DriverConstant.BASE_URL + DriverConstant.USER + DriverConstant.BASIC_AUTH)
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andReturn();
+
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        Boolean authenticationResult = JsonUtils.deserializeStringToObject(contentAsString, Boolean.class);
+        org.assertj.core.api.Assertions.assertThat(authenticationResult).isTrue();
     }
 
 }
