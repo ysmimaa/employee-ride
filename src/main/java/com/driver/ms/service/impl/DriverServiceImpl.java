@@ -2,8 +2,7 @@ package com.driver.ms.service.impl;
 
 import com.driver.ms.common.constant.DriverConstant;
 import com.driver.ms.common.dto.DriverDto;
-import com.driver.ms.common.factory.DriverFactory;
-import com.driver.ms.common.factory.DriverFactoryImpl;
+import com.driver.ms.common.DriverFactory;
 import com.driver.ms.entity.Driver;
 import com.driver.ms.entity.Journey;
 import com.driver.ms.exception.BadParamException;

@@ -1,4 +1,4 @@
-package com.driver.ms.common.factory;
+package com.driver.ms.common;
 
 import com.driver.ms.common.dto.DriverDto;
 import com.driver.ms.entity.Driver;
