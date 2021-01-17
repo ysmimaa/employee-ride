@@ -22,10 +22,10 @@ import static com.driver.ms.common.constant.DriverConstant.TABLE_NAME;
 @Table(name = TABLE_NAME)
 public class Driver extends IdEntity {
 
-    @Column
+    @Column(name = "FIRSTNAME")
     private String firstname;
 
-    @Column
+    @Column(name = "LASTNAME")
     private String lastname;
 
     @Embedded

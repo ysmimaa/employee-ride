@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @Tag(name = DriverConstant.TABLE_NAME, description = "Driver's APIs")
 @RestController
 @RequestMapping(DriverConstant.BASE_URL)
