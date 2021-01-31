@@ -22,6 +22,7 @@ configurations {
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 ext {
     set('springCloudVersion', "Hoxton.SR8")
@@ -30,13 +31,16 @@ ext {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.flywaydb:flyway-core'
-    compileOnly 'org.projectlombok:lombok'
     //developmentOnly 'org.springframework.boot:spring-boot-devtools'
     implementation 'org.springdoc:springdoc-openapi-ui:1.4.8'
     implementation 'org.springdoc:springdoc-openapi-core:1.1.49'
     runtimeOnly 'org.postgresql:postgresql'
-    annotationProcessor 'org.projectlombok:lombok'
+    compileOnly 'org.projectlombok:lombok:1.18.16'
+    annotationProcessor 'org.projectlombok:lombok:1.18.16'
+    testCompileOnly 'org.projectlombok:lombok:1.18.16'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.16'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
@@ -44,9 +48,15 @@ dependencies {
     //implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
+    implementation 'org.springframework.cloud:spring-cloud-sleuth-zipkin'
+    implementation 'org.springframework.amqp:spring-rabbit'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-hystrix'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     testImplementation 'io.cucumber:cucumber-java:6.8.1'
     testImplementation 'io.cucumber:cucumber-junit:6.8.1'
+    //testCompile('de.adesso:junit-insights:1.1.0')
+
 }
 dependencyManagement {
     imports {
@@ -64,6 +74,10 @@ sonarqube {
 
 test {
     useJUnitPlatform()
+    //systemProperty 'de.adesso.junitinsights.enabled', 'true'
+    //systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
+    //systemProperty 'de.adesso.junitinsights.reportpath', 'custom/report/directory/'
+    exclude 'com/driver/ms/integration/**'
 }
 jacocoTestReport {
     reports {

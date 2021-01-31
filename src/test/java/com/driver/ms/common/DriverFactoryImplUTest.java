@@ -1,6 +1,7 @@
 package com.driver.ms.common;
 
 import com.driver.ms.common.dto.DriverDto;
+import com.driver.ms.common.factory.DriverFactoryImpl;
 import com.driver.ms.entity.Driver;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,12 +1,12 @@
 package com.driver.ms.service.impl;
 
 import com.driver.ms.common.dto.DriverDto;
-import com.driver.ms.common.DriverFactory;
-import com.driver.ms.entity.Address;
-import com.driver.ms.entity.Driver;
-import com.driver.ms.entity.Journey;
+import com.driver.ms.common.factory.DriverFactory;
+import com.driver.ms.entity.*;
 import com.driver.ms.exception.BadParamException;
 import com.driver.ms.repository.DriverRepository;
+import com.driver.ms.service.GenericFilter;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -32,6 +32,9 @@ class DriverServiceImplUTest {
 
     @Mock
     private DriverFactory driverFactory;
+
+    @Mock
+    private GenericFilter driverGenericFilter;
 
     @BeforeEach
     void init() {
@@ -300,7 +303,7 @@ class DriverServiceImplUTest {
 
             @DisplayName("Then the existing driver should be updated")
             @Test
-            void should_update_a_driver() {
+            void should_update_a_driver() throws JsonProcessingException {
                 Driver driver = builder()
                         .id(1L)
                         .firstname("driver1")
@@ -352,7 +355,7 @@ class DriverServiceImplUTest {
 
             @DisplayName("Then the driver with the id is deleted")
             @Test
-            void should_delete_a_driver_by_his_id() {
+            void should_delete_a_driver_by_his_id() throws JsonProcessingException {
                 Driver foundDriver = builder()
                         .id(1L)
                         .firstname("driver1")
@@ -383,5 +386,28 @@ class DriverServiceImplUTest {
                 Assertions.assertThrows(BadParamException.class, () -> driverService.deleteDriverById(null));
             }
         }
+
+        @Nested
+        @DisplayName("When user provide a valid firstName")
+        class findDriversWithTheSameFirstName {
+
+            @DisplayName("Then a list of drivers with the same firstName is displayed")
+            @Test
+            void should_throw_an_invalid_parameter_exception_when_passing_invalid_driver() {
+
+                List<Driver> ListOfFoundDrivers = Arrays.asList(builder().id(1L).firstname("firstName").build());
+
+                when(driverGenericFilter.apply(any(Driver.class))).thenReturn(true);
+                when(driverRepository.findAll()).thenReturn(ListOfFoundDrivers);
+
+                List<Driver> filteredDriversWithTheSameFirstName = driverService.filterDriversWithTheSameFirstName();
+
+                org.assertj.core.api.Assertions.assertThat(filteredDriversWithTheSameFirstName).contains(ListOfFoundDrivers.get(0));
+                org.assertj.core.api.Assertions.assertThat(filteredDriversWithTheSameFirstName.get(0).getFirstname()).isEqualTo(ListOfFoundDrivers.get(0).getFirstname());
+
+            }
+        }
+
+
     }
 }

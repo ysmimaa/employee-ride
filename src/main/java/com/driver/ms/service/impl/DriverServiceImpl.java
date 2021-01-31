@@ -1,16 +1,20 @@
 package com.driver.ms.service.impl;
 
+import com.driver.ms.common.factory.DriverFactory;
 import com.driver.ms.common.constant.DriverConstant;
 import com.driver.ms.common.dto.DriverDto;
-import com.driver.ms.common.DriverFactory;
 import com.driver.ms.entity.Driver;
 import com.driver.ms.entity.Journey;
 import com.driver.ms.exception.BadParamException;
 import com.driver.ms.exception.DriverNotFoundException;
 import com.driver.ms.repository.DriverRepository;
 import com.driver.ms.service.DriverService;
+import com.driver.ms.service.GenericFilter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -25,11 +29,14 @@ public class DriverServiceImpl implements DriverService {
 
     private DriverRepository driverRepository;
     private DriverFactory driverFactory;
+    private GenericFilter driverGenericFilter;
 
-    @Autowired
-    public DriverServiceImpl(final DriverRepository driverRepository, final DriverFactory driverFactory) {
+    public DriverServiceImpl(final DriverRepository driverRepository,
+                             final DriverFactory driverFactory,
+                             @Qualifier("filterDriverByFirstName") GenericFilter filterDriverByFirstName) {
         this.driverRepository = driverRepository;
         this.driverFactory = driverFactory;
+        this.driverGenericFilter = filterDriverByFirstName;
     }
 
     @Override
@@ -44,7 +51,7 @@ public class DriverServiceImpl implements DriverService {
         if (driverDto == null) {
             throw new BadParamException(DriverConstant.PLEASE_PROVIDE_A_VALID_DRIVER);
         }
-        log.debug("Drive has been created");
+        log.info("Drive has been created");
         Driver savedDriver = driverRepository.save(driverFactory.convertDriverDtoToDriverEntity(driverDto));
         return driverFactory.convertDriverEntityToDriverDto(savedDriver);
 
@@ -60,7 +67,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public Driver updateDriver(DriverDto driverDto) {
+    public Driver updateDriver(DriverDto driverDto) throws JsonProcessingException {
         if (driverDto == null) {
             throw new BadParamException(DriverConstant.PLEASE_PROVIDE_A_VALID_DRIVER);
         }
@@ -70,17 +77,21 @@ public class DriverServiceImpl implements DriverService {
                     driverToUpdate.setFirstname(driverDto.getFirstName());
                     driverToUpdate.setLastname(driverDto.getLastName());
 
-                    log.info("Updating driverDto with id {} : ", driverDto.getId());
+                    try {
+                        log.info("Updating driverDto with id {} ", new ObjectMapper().writeValueAsString(driverDto.getId()));
+                    } catch (JsonProcessingException exception) {
+                        log.error(exception.getMessage());
+                    }
                     return driverRepository.save(driverToUpdate);
                 }).orElseThrow();
     }
 
     @Override
-    public Driver findDriverById(Long id) {
+    public Driver findDriverById(Long id) throws JsonProcessingException {
         if (id == null) {
             throw new BadParamException(DriverConstant.PLEASE_PROVIDE_A_VALID_DRIVER);
         }
-        log.info("Find driver by id : {} ", id);
+        log.info("Find driver by id : {} ", new ObjectMapper().writeValueAsString(id));
         return driverRepository.findById(id)
                 .orElseThrow(() -> new DriverNotFoundException("Driver with id " + id + " not found"));
     }
@@ -103,7 +114,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public Driver deleteDriverById(Long id) {
+    public Driver deleteDriverById(Long id) throws JsonProcessingException {
         if (id == null) {
             throw new BadParamException("Please provide a valid driver id");
         }
@@ -130,5 +141,12 @@ public class DriverServiceImpl implements DriverService {
         log.info("Finding the driver {} ", lastName);
         return driverRepository.findByLastname(lastName)
                 .orElseThrow(() -> new RuntimeException("Driver not found"));
+    }
+
+    @Override
+    public List<Driver> filterDriversWithTheSameFirstName() {
+        return driverRepository.findAll().stream()
+                .filter(driverGenericFilter::apply)
+                .collect(Collectors.toList());
     }
 }
