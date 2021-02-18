@@ -1,8 +1,8 @@
 package com.driver.ms.service.impl;
 
-import com.driver.ms.common.factory.DriverFactory;
 import com.driver.ms.common.constant.DriverConstant;
 import com.driver.ms.common.dto.DriverDto;
+import com.driver.ms.common.factory.DriverFactory;
 import com.driver.ms.entity.Driver;
 import com.driver.ms.entity.Journey;
 import com.driver.ms.exception.BadParamException;
@@ -13,7 +13,6 @@ import com.driver.ms.service.GenericFilter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -67,32 +66,35 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public Driver updateDriver(DriverDto driverDto) throws JsonProcessingException {
+    public DriverDto updateDriver(DriverDto driverDto) throws JsonProcessingException {
         if (driverDto == null) {
             throw new BadParamException(DriverConstant.PLEASE_PROVIDE_A_VALID_DRIVER);
         }
         Long driverId = driverDto.getId();
         return Optional.of(findDriverById(driverId))
                 .map(driverToUpdate -> {
-                    driverToUpdate.setFirstname(driverDto.getFirstName());
-                    driverToUpdate.setLastname(driverDto.getLastName());
+                    driverToUpdate.setFirstName(driverDto.getFirstName());
+                    driverToUpdate.setLastName(driverDto.getLastName());
 
                     try {
                         log.info("Updating driverDto with id {} ", new ObjectMapper().writeValueAsString(driverDto.getId()));
                     } catch (JsonProcessingException exception) {
                         log.error(exception.getMessage());
                     }
-                    return driverRepository.save(driverToUpdate);
+                    return driverFactory.convertDriverEntityToDriverDto(
+                            driverRepository.save(driverFactory.convertDriverDtoToDriverEntity(driverToUpdate))
+                    );
                 }).orElseThrow();
     }
 
     @Override
-    public Driver findDriverById(Long id) throws JsonProcessingException {
+    public DriverDto findDriverById(Long id) throws JsonProcessingException {
         if (id == null) {
             throw new BadParamException(DriverConstant.PLEASE_PROVIDE_A_VALID_DRIVER);
         }
         log.info("Find driver by id : {} ", new ObjectMapper().writeValueAsString(id));
         return driverRepository.findById(id)
+                .map(driver -> driverFactory.convertDriverEntityToDriverDto(driver))
                 .orElseThrow(() -> new DriverNotFoundException("Driver with id " + id + " not found"));
     }
 
@@ -114,7 +116,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public Driver deleteDriverById(Long id) throws JsonProcessingException {
+    public DriverDto deleteDriverById(Long id) throws JsonProcessingException {
         if (id == null) {
             throw new BadParamException("Please provide a valid driver id");
         }
@@ -122,7 +124,7 @@ public class DriverServiceImpl implements DriverService {
         return Optional.of(findDriverById(id))
                 .map(driver -> {
                     log.info("The driver with the id {} has been deleted", id);
-                    driverRepository.delete(driver);
+                    driverRepository.delete(driverFactory.convertDriverDtoToDriverEntity(driver));
                     return driver;
                 }).orElse(null);
     }

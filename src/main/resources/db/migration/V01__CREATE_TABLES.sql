@@ -12,6 +12,7 @@ create table driver
     hired_date    timestamp,
     journey_id    int8,
     lastname      varchar(255),
+    is_valid      boolean,
     user_id       int8,
     primary key (id)
 );

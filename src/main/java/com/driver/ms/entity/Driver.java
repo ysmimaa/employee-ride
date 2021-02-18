@@ -12,6 +12,7 @@ import static com.driver.ms.common.constant.DriverConstant.TABLE_NAME;
  * Entity Driver
  */
 
+@EqualsAndHashCode
 @SuperBuilder
 @Getter
 @Setter
@@ -54,4 +55,5 @@ public class Driver extends IdEntity {
     @Transient
     private Company company;
 
+    private boolean isValid;
 }
