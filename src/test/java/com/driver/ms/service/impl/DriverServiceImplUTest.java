@@ -2,12 +2,15 @@ package com.driver.ms.service.impl;
 
 import com.driver.ms.common.dto.DriverDto;
 import com.driver.ms.common.factory.DriverFactory;
-import com.driver.ms.entity.*;
+import com.driver.ms.entity.Address;
+import com.driver.ms.entity.Driver;
+import com.driver.ms.entity.Journey;
 import com.driver.ms.exception.BadParamException;
 import com.driver.ms.repository.DriverRepository;
 import com.driver.ms.service.GenericFilter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.*;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
@@ -44,7 +47,6 @@ class DriverServiceImplUTest {
     @DisplayName("Given the list of drivers")
     @Nested
     class DisplayAllDriversTest {
-
         @DisplayName("When invoking the find all drivers service")
         @Nested
         class AllDriversTest {
@@ -134,11 +136,9 @@ class DriverServiceImplUTest {
     @DisplayName("Given find drivers by criteria service")
     @Nested
     class DisplayDriversBySearchCriteria {
-
         @DisplayName("When passing the firstName criteria ")
         @Nested
         class DriverByFirstName {
-
             @Test
             @DisplayName(value = "Display drivers based on the search criteria available in the list")
             void should_return_a_list_of_driver_based_on_a_search_criteria() {
@@ -171,7 +171,6 @@ class DriverServiceImplUTest {
             @DisplayName("When passing an invalid firstName criteria")
             @Nested
             class DriverByFirstNameInvalidParam {
-
                 @Test
                 @DisplayName(value = "Bad param exception is thrown")
                 void should_throw_bad_param_exception_when_providing_invalid_param() {
@@ -185,7 +184,6 @@ class DriverServiceImplUTest {
             @DisplayName("When passing the phone criteria ")
             @Nested
             class DriverByPhone {
-
                 @Test
                 @DisplayName(value = "Display driver based on the phone search criteria")
                 void should_return_a_driver_based_on_the_phone_search_criteria() {
@@ -204,7 +202,6 @@ class DriverServiceImplUTest {
             @DisplayName("When passing an invalid phone criteria ")
             @Nested
             class DriverByInvalidPhone {
-
                 @Test
                 @DisplayName(value = "Throw an exception")
                 void should_throw_an_exception() {
@@ -217,7 +214,6 @@ class DriverServiceImplUTest {
         @DisplayName("When user provides the lastName search criteria ")
         @Nested
         class DriverByPhone {
-
             @Test
             @DisplayName(value = "Display driver based on the lastName search")
             void should_return_a_driver_based_on_the_lastName_search_criteria() {
@@ -247,7 +243,6 @@ class DriverServiceImplUTest {
         @Nested
         @DisplayName("When user passes a new driver")
         class NewDriver {
-
             @DisplayName("Then a new driver should be created and added to the list")
             @Test
             void should_create_a_new_driver() {
@@ -284,7 +279,6 @@ class DriverServiceImplUTest {
         @DisplayName("When user passes an invalid driver")
         @Nested
         class NewInvalidDriverThrowsException {
-
             @DisplayName("Then throw a BadParamException exception")
             @Test
             void should_throw_exception_when_trying_to_add_an_empty_or_invalid_driver() {
@@ -300,7 +294,6 @@ class DriverServiceImplUTest {
         @Nested
         @DisplayName("When the user passes a new driver for updating the existing one")
         class DriverToBeUpdated {
-
             @DisplayName("Then the existing driver should be updated")
             @Test
             void should_update_a_driver() throws JsonProcessingException {
@@ -324,20 +317,24 @@ class DriverServiceImplUTest {
                         .build();
                 when(driverRepository.findById(anyLong())).thenReturn(Optional.of(driver));
                 when(driverRepository.save(any(Driver.class))).thenReturn(driver);
+                when(driverFactory.convertDriverDtoToDriverEntity(driverDtoToBeUpdated)).thenReturn(Driver.builder().build());
+                when(driverFactory.convertDriverEntityToDriverDto(driver)).thenReturn(driverDtoToBeUpdated);
 
-                Driver updatedDriver = driverService.updateDriver(driverDtoToBeUpdated);
+
+                DriverDto updatedDriver = driverService.updateDriver(driverDtoToBeUpdated);
                 assertAll("Check condition",
-                        () -> assertEquals(driver, updatedDriver, "A driver has been updated"));
+                        () -> assertEquals(driverDtoToBeUpdated, updatedDriver, "A driver has been updated"));
 
                 verify(driverRepository, times(1)).findById(anyLong());
                 verify(driverRepository, times(1)).save(any(Driver.class));
+                verify(driverFactory, times(1)).convertDriverDtoToDriverEntity(any(DriverDto.class));
+                verify(driverFactory, times(2)).convertDriverEntityToDriverDto(any(Driver.class));
             }
         }
 
         @Nested
         @DisplayName("When the user passes an invalid driver to be updated")
         class DriverToBeUpdatedWithInvalidInput {
-
             @DisplayName("Then invalid parameter exception is thrown")
             @Test
             void should_throw_an_invalid_parameter_exception_when_passing_invalid_driver() {
@@ -352,7 +349,6 @@ class DriverServiceImplUTest {
         @Nested
         @DisplayName("When the user passes a valid id of the driver to be deleted")
         class DriverToBeDeleted {
-
             @DisplayName("Then the driver with the id is deleted")
             @Test
             void should_delete_a_driver_by_his_id() throws JsonProcessingException {
@@ -365,21 +361,25 @@ class DriverServiceImplUTest {
                                         .build()
                         )
                         .build();
+                DriverDto driverDtoToBeReturned = DriverDto.builder().id(1L).firstName("driver1").build();
+
                 when(driverRepository.findById(anyLong())).thenReturn(Optional.of(foundDriver));
+                when(driverFactory.convertDriverEntityToDriverDto(foundDriver)).thenReturn(driverDtoToBeReturned);
+
                 doNothing().when(driverRepository).delete(any(Driver.class));
 
-                Driver deletedDriver = driverService.deleteDriverById(foundDriver.getId());
+                DriverDto deletedDriver = driverService.deleteDriverById(foundDriver.getId());
 
                 assertAll("Check condition",
-                        () -> assertEquals(foundDriver, deletedDriver, "A driver has been deleted"));
+                        () -> assertEquals(driverDtoToBeReturned, deletedDriver, "A driver has been deleted"));
                 verify(driverRepository, times(1)).findById(anyLong());
+                verify(driverFactory, times(1)).convertDriverEntityToDriverDto(any(Driver.class));
             }
         }
 
         @Nested
         @DisplayName("When the user passes an invalid id")
         class DriverToBeDeletedWithInvalidInput {
-
             @DisplayName("Then invalid parameter exception is thrown")
             @Test
             void should_throw_an_invalid_parameter_exception_when_passing_invalid_driver() {
@@ -390,11 +390,9 @@ class DriverServiceImplUTest {
         @Nested
         @DisplayName("When user provide a valid firstName")
         class findDriversWithTheSameFirstName {
-
             @DisplayName("Then a list of drivers with the same firstName is displayed")
             @Test
             void should_throw_an_invalid_parameter_exception_when_passing_invalid_driver() {
-
                 List<Driver> ListOfFoundDrivers = Arrays.asList(builder().id(1L).firstname("firstName").build());
 
                 when(driverGenericFilter.apply(any(Driver.class))).thenReturn(true);
@@ -404,10 +402,48 @@ class DriverServiceImplUTest {
 
                 org.assertj.core.api.Assertions.assertThat(filteredDriversWithTheSameFirstName).contains(ListOfFoundDrivers.get(0));
                 org.assertj.core.api.Assertions.assertThat(filteredDriversWithTheSameFirstName.get(0).getFirstname()).isEqualTo(ListOfFoundDrivers.get(0).getFirstname());
+            }
+        }
+    }
+
+    @DisplayName("Find driver by id")
+    @Nested
+    class FindDriverByIdSpec {
+        @DisplayName("Given an id for the driver to be found")
+        @Nested
+        class FindDriverByIdValidId {
+            @DisplayName("When invoking the find by id service with an invalid id")
+            @Nested
+            class FindDriverByIdCaseInvalidId {
+                @Test
+                @DisplayName(value = "Then an exception is thrown")
+                void should_throw_an_exception_when_id_is_valid() throws JsonProcessingException {
+                    Assertions.assertThrows(BadParamException.class, () -> driverService.findDriverById(null));
+                }
+            }
+
+            @DisplayName("When invoking the find by id service with a valid id")
+            @Nested
+            class FindDriverByIdCaseValidId {
+                @Test
+                @DisplayName(value = "Then a driver with the id should be returned")
+                void should_throw_an_exception_when_id_is_valid() throws JsonProcessingException {
+                    Driver driverToBeFound = Driver.builder().id(1L).firstname("driver1").build();
+                    DriverDto driverDtoToBeReturned = DriverDto.builder().id(1L).firstName("driver1").build();
+
+                    when(driverRepository.findById(ArgumentMatchers.anyLong())).thenReturn(Optional.of(driverToBeFound));
+                    when(driverFactory.convertDriverEntityToDriverDto(driverToBeFound)).thenReturn(driverDtoToBeReturned);
+
+                    DriverDto foundDriver = driverService.findDriverById(1L);
+
+                    org.assertj.core.api.Assertions.assertThat(driverDtoToBeReturned).isEqualToComparingFieldByField(foundDriver);
+
+                    verify(driverRepository, times(1)).findById(ArgumentMatchers.anyLong());
+
+                }
 
             }
         }
-
 
     }
 }

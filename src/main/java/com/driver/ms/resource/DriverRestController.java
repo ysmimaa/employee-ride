@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Slf4j
-@CrossOrigin(origins = "http://localhost:4200")
 @Tag(name = DriverConstant.TABLE_NAME, description = "Driver's APIs")
 @RestController
 @RequestMapping(DriverConstant.BASE_URL)
@@ -30,11 +28,8 @@ public class DriverRestController {
 
     private DriverService driverService;
 
-    private Environment environment;
-
-    public DriverRestController(final DriverService driverService, Environment environment) {
+    public DriverRestController(final DriverService driverService) {
         this.driverService = driverService;
-        this.environment = environment;
     }
 
     @Operation(method = "Get", description = "Fetch the list of driver", tags = "Driver")
@@ -69,13 +64,13 @@ public class DriverRestController {
     }
 
     @GetMapping(path = DriverConstant.FIND_DRIVER_BY_ID)
-    public ResponseEntity<Driver> getDriverById(@PathVariable(name = DriverConstant.ID) Long id) throws JsonProcessingException, InterruptedException {
+    public ResponseEntity<DriverDto> getDriverById(@PathVariable(name = DriverConstant.ID) Long id) throws JsonProcessingException {
         log.info("Get driver by id {} API ", new ObjectMapper().writeValueAsString(id));
         return new ResponseEntity<>(driverService.findDriverById(id), HttpStatus.OK);
     }
 
     @DeleteMapping(path = DriverConstant.DELETE_DRIVER_BY_ID)
-    public ResponseEntity<Driver> deleteDriver(@PathVariable(name = DriverConstant.ID) Long id) throws JsonProcessingException {
+    public ResponseEntity<DriverDto> deleteDriver(@PathVariable(name = DriverConstant.ID) Long id) throws JsonProcessingException {
         log.info("Delete driver by id {} API ", new ObjectMapper().writeValueAsString(id));
         return new ResponseEntity<>(driverService.deleteDriverById(id), HttpStatus.OK);
     }
@@ -87,7 +82,7 @@ public class DriverRestController {
     }
 
     @PutMapping(path = DriverConstant.DRIVER + DriverConstant.UPDATE_DRIVER)
-    public ResponseEntity<Driver> updateDriver(@RequestBody DriverDto driverDto) throws JsonProcessingException {
+    public ResponseEntity<DriverDto> updateDriver(@RequestBody DriverDto driverDto) throws JsonProcessingException {
         log.info("Update driver {} API ", new ObjectMapper().writeValueAsString(driverDto));
         return new ResponseEntity<>(driverService.updateDriver(driverDto), HttpStatus.OK);
     }
@@ -99,7 +94,7 @@ public class DriverRestController {
 
     @GetMapping("env-name")
     @HystrixCommand(fallbackMethod = "findDriverByIdFallBackMethod")
-    public String getDriverByIdFallBack() throws InterruptedException {
+    public String getDriverByIdFallBack() {
         return "test";
     }
 

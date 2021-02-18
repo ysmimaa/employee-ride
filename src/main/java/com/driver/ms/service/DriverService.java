@@ -38,7 +38,7 @@ public interface DriverService {
      * @param driverDto given driver
      * @return the driver that has been updated
      */
-    Driver updateDriver(DriverDto driverDto) throws JsonProcessingException;
+    DriverDto updateDriver(DriverDto driverDto) throws JsonProcessingException;
 
     /**
      * Method that return a driver by his id
@@ -46,7 +46,7 @@ public interface DriverService {
      * @param id given id
      * @return the driver if exist
      */
-    Driver findDriverById(Long id) throws JsonProcessingException;
+    DriverDto findDriverById(Long id) throws JsonProcessingException;
 
     /**
      * Method that return a driver by his phone
@@ -69,7 +69,7 @@ public interface DriverService {
      * @param id driver id
      * @return deleted id
      */
-    Driver deleteDriverById(Long id) throws JsonProcessingException;
+    DriverDto deleteDriverById(Long id) throws JsonProcessingException;
 
     /**
      * Method that return the driver's metrics

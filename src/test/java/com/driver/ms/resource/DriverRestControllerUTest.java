@@ -165,7 +165,7 @@ class DriverRestControllerUTest {
 
     @Test
     void should_delete_a_driver_by_id() throws Exception {
-        Driver driver = Driver.builder()
+        DriverDto driver = DriverDto.builder()
                 .id(1L)
                 .build();
 
@@ -176,7 +176,7 @@ class DriverRestControllerUTest {
                 .andReturn();
 
         String contentAsString = mvcResult.getResponse().getContentAsString();
-        Driver deletedDriver = JsonUtils.deserializeStringToObject(contentAsString, Driver.class);
+        DriverDto deletedDriver = JsonUtils.deserializeStringToObject(contentAsString, DriverDto.class);
 
         org.assertj.core.api.Assertions.assertThat(deletedDriver.getId()).isEqualTo(driver.getId());
 
@@ -209,7 +209,7 @@ class DriverRestControllerUTest {
 
     @Test
     void should_return_driver_by_his_id() throws Exception {
-        Driver driverToFind = builder().id(1L).build();
+        DriverDto driverToFind = DriverDto.builder().id(1L).build();
 
         when(driverService.findDriverById(anyLong())).thenReturn(driverToFind);
 
@@ -220,7 +220,7 @@ class DriverRestControllerUTest {
 
         String contentAsString = mvcResult.getResponse().getContentAsString();
 
-        Driver foundDriver = JsonUtils.deserializeStringToObject(contentAsString, Driver.class);
+        DriverDto foundDriver = JsonUtils.deserializeStringToObject(contentAsString, DriverDto.class);
 
         org.assertj.core.api.Assertions.assertThat(driverToFind).isEqualToComparingFieldByField(foundDriver);
 
@@ -231,7 +231,7 @@ class DriverRestControllerUTest {
     @Test
     void should_update_a_provided_driver() throws Exception {
 
-        Driver driverToUpdate = builder().id(1L).build();
+        DriverDto driverToUpdate = DriverDto.builder().id(1L).build();
 
         when(driverService.updateDriver(any(DriverDto.class))).thenReturn(driverToUpdate);
 
@@ -243,7 +243,7 @@ class DriverRestControllerUTest {
 
         String contentAsString = mvcResult.getResponse().getContentAsString();
 
-        Driver updatedDriver = JsonUtils.deserializeStringToObject(contentAsString, Driver.class);
+        DriverDto updatedDriver = JsonUtils.deserializeStringToObject(contentAsString, DriverDto.class);
 
         org.assertj.core.api.Assertions.assertThat(driverToUpdate).isEqualToComparingFieldByField(updatedDriver);
 
